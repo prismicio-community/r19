@@ -7,6 +7,7 @@ export {
 export {
 	ProceduresFromInstance,
 	proceduresFromInstance,
+	OmittableProcedures,
 } from "./proceduresFromInstance";
 
 export { Procedure, Procedures, ExtractProcedures } from "./types";
