@@ -133,9 +133,9 @@ limitations under the License.
 <!-- TODO: Replace link with a more useful one if available -->
 
 [forum-question]: https://community.prismic.io
-[repo-bug-report]: https://github.com/prismicio/slice-machine/issues/new?assignees=&labels=bug&template=bug_report.md&title=
-[repo-feature-request]: https://github.com/prismicio/slice-machine/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
-[repo-pull-requests]: https://github.com/prismicio/slice-machine/pulls
+[repo-bug-report]: https://github.com/prismicio-community/rpc-ts/issues/new?assignees=&labels=bug&template=bug_report.md&title=
+[repo-feature-request]: https://github.com/prismicio-community/rpc-ts/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
+[repo-pull-requests]: https://github.com/prismicio-community/rpc-ts/pulls
 
 <!-- Badges -->
 
@@ -143,10 +143,10 @@ limitations under the License.
 [npm-version-href]: https://npmjs.com/package/rpc-ts
 [npm-downloads-src]: https://img.shields.io/npm/dm/rpc-ts.svg
 [npm-downloads-href]: https://npmjs.com/package/rpc-ts
-[github-actions-ci-src]: https://github.com/prismicio/slice-machine/workflows/ci/badge.svg
-[github-actions-ci-href]: https://github.com/prismicio/slice-machine/actions?query=workflow%3Aci
-[codecov-src]: https://img.shields.io/codecov/c/github/prismicio/slice-machine.svg
-[codecov-href]: https://codecov.io/gh/prismicio/slice-machine
+[github-actions-ci-src]: https://github.com/prismicio-community/rpc-ts/workflows/ci/badge.svg
+[github-actions-ci-href]: https://github.com/prismicio-community/rpc-ts/actions?query=workflow%3Aci
+[codecov-src]: https://img.shields.io/codecov/c/github/prismicio-community/rpc-ts.svg
+[codecov-href]: https://codecov.io/gh/prismicio-community/rpc-ts
 [conventional-commits-src]: https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg
 [conventional-commits-href]: https://conventionalcommits.org
 [license-src]: https://img.shields.io/npm/l/rpc-ts.svg
