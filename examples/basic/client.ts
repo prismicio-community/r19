@@ -1,4 +1,4 @@
-import { createRPCClient } from "rpc-ts";
+import { createRPCClient } from "r19/client";
 import type { Procedures } from "./rpc-middleware";
 
 const client = createRPCClient<Procedures>({

@@ -1,6 +1,6 @@
 # Setting up procedures on the server
 
-An HTTP server is required to use RPCs; it is the "remote" in "remote procedure calls." `rpc-ts` supports any server that accepts Express middleware, such as [Express][express], [Fastify][fastify], or [h3][h3].
+An HTTP server is required to use RPCs; it is the "remote" in "remote procedure calls." `r19` supports any server that accepts Express middleware, such as [Express][express], [Fastify][fastify], or [h3][h3].
 
 Use `createRPCMiddleware()` to create an Express middleware that handles RPC requests. The middleware contains code to run your procedures as well as the TypeScript types to type your client.
 
@@ -9,7 +9,7 @@ The following example creates an RPC middleware with a `ping()` procedure. The p
 ```typescript
 // src/rpc-middleware.ts
 
-import { createRPCMiddleware, ExtractProcedures } from "rpc-ts";
+import { createRPCMiddleware, ExtractProcedures } from "r19";
 
 export const middleware = createRPCMiddleware({
 	procedures: {

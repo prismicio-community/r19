@@ -1,8 +1,8 @@
 import { createServer } from "node:http";
 import { Buffer } from "node:buffer";
 import { expect, it, vi } from "vitest";
-import fetch from "node-fetch";
 import { createApp, fromNodeMiddleware, toNodeListener } from "h3";
+import fetch from "node-fetch";
 
 import { listen } from "./__testutils__/listen";
 

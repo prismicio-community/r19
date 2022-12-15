@@ -1,4 +1,4 @@
-import { createRPCMiddleware, ExtractProcedures } from "rpc-ts";
+import { createRPCMiddleware, ExtractProcedures } from "r19";
 
 export const middleware = createRPCMiddleware({
 	procedures: {

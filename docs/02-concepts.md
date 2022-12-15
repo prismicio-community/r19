@@ -16,7 +16,7 @@ See [Procedures](./02-procedures.md) for more details.
 
 The server runs your procedure calls. It communicates with the client over HTTP using a single endpoint.
 
-`rpc-ts` produces an [Express middleware][express-middleware] which can be provided to any Express-compatible server.
+`r19` produces an [Express middleware][express-middleware] which can be provided to any Express-compatible server.
 
 The server does not perform any runtime type checking of arguments. Instead, it assumes you are type checking your project with TypeScript. Your procedures' argument and return types are provided to the client to ensure procedure calls are provided with the correct arguments and expect the correct return types.
 

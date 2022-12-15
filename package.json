@@ -1,5 +1,5 @@
 {
-	"name": "rpc-ts",
+	"name": "r19",
 	"version": "0.1.0",
 	"description": "Simple remote procedure calls in TypeScript",
 	"keywords": [
@@ -9,7 +9,7 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "ssh://git@github.com/prismicio-community/rpc-ts.git"
+		"url": "ssh://git@github.com/prismicio-community/r19.git"
 	},
 	"license": "Apache-2.0",
 	"author": "Prismic <contact@prismic.io> (https://prismic.io)",

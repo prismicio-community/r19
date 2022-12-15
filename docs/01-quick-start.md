@@ -7,7 +7,7 @@
     ```typescript
     // src/rpc-middleware.ts
 
-    import { createRPCMiddleware, ExtractProcedures } from "rpc-ts";
+    import { createRPCMiddleware, ExtractProcedures } from "r19";
 
     export const middleware = createRPCMiddleware({
     	procedures: {
@@ -46,7 +46,7 @@
     ```typescript
     // src/index.ts
 
-    import { createRPCClient } from "rpc-ts/client";
+    import { createRPCClient } from "r19/client";
     import type { Procedures } from "./rpc-middleware";
 
     const client = createRPCClient<Procedures>({

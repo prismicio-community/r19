@@ -5,7 +5,7 @@ Calling procedures requires a client library. The client serializes arguments, r
 ```typescript
 // src/client.ts
 
-import { createRPCClient } from "rpc-ts/client";
+import { createRPCClient } from "r19/client";
 import type { Procedures } from "./path/to/your/middleware";
 
 const client = createRPCClient<Procedures>({

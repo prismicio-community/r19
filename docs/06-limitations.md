@@ -2,7 +2,7 @@
 
 ## Binary data
 
-On the server, binary data is handled using `Buffer`s. On the client, binary is data handled using `Blob`s. `rpc-ts` converts between both automatically.
+On the server, binary data is handled using `Buffer`s. On the client, binary is data handled using `Blob`s. `r19` converts between both automatically.
 
 Node.js supports `Blob` since v16.17, but Node.js code typically uses `Buffer`s. The `fs` module, for example, returns `Buffer`s, not `Blob`s.
 
@@ -10,7 +10,7 @@ Node.js supports `Blob` since v16.17, but Node.js code typically uses `Buffer`s.
 // src/rpc-middleware.ts
 
 import * as fs from "node:fs/promises";
-import { createRPCMiddleware } from "rpc-ts";
+import { createRPCMiddleware } from "r19";
 
 export const middleware = createRPCMiddleware({
 	procedures: {
@@ -26,7 +26,7 @@ export type Procedures = ExtractProcedures<typeof middleware>;
 ```typescript
 // src/client.ts
 
-import { createRPCClient } from "rpc-ts/client";
+import { createRPCClient } from "r19/client";
 import type { Procedures } from "./path/to/your/middleware";
 
 const client = createRPCClient<Procedures>({
@@ -41,7 +41,7 @@ await client.write({
 
 ## Non-serializable data
 
-Since data is passed between a client and a server, procedure arguments and return values must be serialized. `rpc-ts` uses [`FormData`][mdn-formdata] and [`devalue`][devalue] to send and serialize data.
+Since data is passed between a client and a server, procedure arguments and return values must be serialized. `r19` uses [`FormData`][mdn-formdata] and [`devalue`][devalue] to send and serialize data.
 
 Most JavaScript data can be used, but functions and classs cannot be serialized.
 

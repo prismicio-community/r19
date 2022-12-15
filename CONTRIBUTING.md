@@ -12,7 +12,7 @@ For the latter, the [Quick Start](#quick-start) section below can help you. You 
 # First, fork the repository to your GitHub account if you aren't an existing maintainer
 
 # Clone your fork
-git clone git@github.com:<your-username>/rpc-ts.git
+git clone git@github.com:<your-username>/r19.git
 
 # Create a feature branch with your initials and feature name
 git checkout -b <your-initials>/<feature-or-fix-description> # e.g. `lh/fix-win32-paths`

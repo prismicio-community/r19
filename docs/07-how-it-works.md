@@ -1,6 +1,6 @@
 # How It Works
 
-`rpc-ts` uses the following flow to process procedures over the network.
+`r19` uses the following flow to process procedures over the network.
 
 ```mermaid
 flowchart TB
@@ -27,13 +27,13 @@ The client is mostly a wrapper around `fetch` with serialization and deserializa
 
 ## Serialization format
 
-`rpc-ts` supports the following types of data:
+`r19` supports the following types of data:
 
 - Any data supported by [`devalue`][devalue]
 - Binary (images, audio, video, etc.)
 - Nested objects
 
-`rpc-ts` uses [`FormData`][mdn-formdata] as its serialization format. `FormData` supports binary data (via [`Blob`][mdn-blob]) and strings.
+`r19` uses [`FormData`][mdn-formdata] as its serialization format. `FormData` supports binary data (via [`Blob`][mdn-blob]) and strings.
 
 Non-binary data is serialized before being added to `FormData` using [`devalue`][devalue]. Numbers, `undefined`, `null`, objects, arrays, and more are supported using `devalue`.
 
@@ -53,7 +53,7 @@ Properties like `cause` or ones stored in custom errors are ignored.
 
 ## TypeScript
 
-`rpc-ts` relies heavily on TypeScript to provide a type safe RPC implementation. The server must be used with the client to ensure type safety.
+`r19` relies heavily on TypeScript to provide a type safe RPC implementation. The server must be used with the client to ensure type safety.
 
 Middleware produced by `createRPCMiddleware()` holds a type reference to its procedures.
 
@@ -79,7 +79,7 @@ Procedure types need to be modified slightly to support binary data. `Buffer`s a
 
 ### Working with arbitrarily nested types
 
-`rpc-ts` supports nested data and procedures through liberal use of recursive types.
+`r19` supports nested data and procedures through liberal use of recursive types.
 
 For example, the following type is used to transform procedure arguments:
 

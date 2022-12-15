@@ -1,4 +1,4 @@
-# rpc-ts
+# r19
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
@@ -16,7 +16,7 @@ Simple [remote procedure calls (RPC)][rpc-wiki] in TypeScript.
 ## Install
 
 ```bash
-npm install rpc-ts
+npm install r19
 ```
 
 ## Quick start
@@ -26,7 +26,7 @@ npm install rpc-ts
     ```typescript
     // src/rpc-middleware.ts
 
-    import { createRPCMiddleware, ExtractProcedures } from "rpc-ts";
+    import { createRPCMiddleware, ExtractProcedures } from "r19";
 
     export const middleware = createRPCMiddleware({
     	procedures: {
@@ -65,7 +65,7 @@ npm install rpc-ts
     ```typescript
     // src/index.ts
 
-    import { createRPCClient } from "rpc-ts/client";
+    import { createRPCClient } from "r19/client";
     import type { Procedures } from "./rpc-middleware";
 
     const client = createRPCClient<Procedures>({
@@ -133,21 +133,21 @@ limitations under the License.
 <!-- TODO: Replace link with a more useful one if available -->
 
 [forum-question]: https://community.prismic.io
-[repo-bug-report]: https://github.com/prismicio-community/rpc-ts/issues/new?assignees=&labels=bug&template=bug_report.md&title=
-[repo-feature-request]: https://github.com/prismicio-community/rpc-ts/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
-[repo-pull-requests]: https://github.com/prismicio-community/rpc-ts/pulls
+[repo-bug-report]: https://github.com/prismicio-community/r19/issues/new?assignees=&labels=bug&template=bug_report.md&title=
+[repo-feature-request]: https://github.com/prismicio-community/r19/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
+[repo-pull-requests]: https://github.com/prismicio-community/r19/pulls
 
 <!-- Badges -->
 
-[npm-version-src]: https://img.shields.io/npm/v/rpc-ts/latest.svg
-[npm-version-href]: https://npmjs.com/package/rpc-ts
-[npm-downloads-src]: https://img.shields.io/npm/dm/rpc-ts.svg
-[npm-downloads-href]: https://npmjs.com/package/rpc-ts
-[github-actions-ci-src]: https://github.com/prismicio-community/rpc-ts/workflows/ci/badge.svg
-[github-actions-ci-href]: https://github.com/prismicio-community/rpc-ts/actions?query=workflow%3Aci
-[codecov-src]: https://img.shields.io/codecov/c/github/prismicio-community/rpc-ts.svg
-[codecov-href]: https://codecov.io/gh/prismicio-community/rpc-ts
+[npm-version-src]: https://img.shields.io/npm/v/r19/latest.svg
+[npm-version-href]: https://npmjs.com/package/r19
+[npm-downloads-src]: https://img.shields.io/npm/dm/r19.svg
+[npm-downloads-href]: https://npmjs.com/package/r19
+[github-actions-ci-src]: https://github.com/prismicio-community/r19/workflows/ci/badge.svg
+[github-actions-ci-href]: https://github.com/prismicio-community/r19/actions?query=workflow%3Aci
+[codecov-src]: https://img.shields.io/codecov/c/github/prismicio-community/r19.svg
+[codecov-href]: https://codecov.io/gh/prismicio-community/r19
 [conventional-commits-src]: https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg
 [conventional-commits-href]: https://conventionalcommits.org
-[license-src]: https://img.shields.io/npm/l/rpc-ts.svg
-[license-href]: https://npmjs.com/package/rpc-ts
+[license-src]: https://img.shields.io/npm/l/r19.svg
+[license-href]: https://npmjs.com/package/r19

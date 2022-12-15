@@ -2,7 +2,7 @@ import {
 	createRPCMiddleware,
 	proceduresFromInstance,
 	ExtractProcedures,
-} from "rpc-ts";
+} from "r19";
 
 class MyProcedures {
 	count = 0;

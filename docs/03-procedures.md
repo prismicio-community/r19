@@ -5,7 +5,7 @@ Procedures are functions run on a server. You write them like normal functions w
 ```typescript
 // src/middleware.ts
 
-import { createRPCMiddleware, ExtractProcedures } from "rpc-ts";
+import { createRPCMiddleware, ExtractProcedures } from "r19";
 
 export const middleware = createRPCMiddleware({
 	procedures: {
@@ -23,7 +23,7 @@ Clients call them like typical JavaScript methods.
 ```typescript
 // src/client.ts
 
-import { createRPCClient } from "rpc-ts/client";
+import { createRPCClient } from "r19/client";
 import type { Procedures } from "./server";
 
 const client = createRPCClient<Procedures>({
@@ -77,7 +77,7 @@ export const middleware = createRPCMiddleware({
 ```typescript
 // src/client.ts
 
-import { createRPCClient } from "rpc-ts/client";
+import { createRPCClient } from "r19/client";
 import type { Procedures } from "./rpc-middleware";
 
 const client = createRPCClient<Procedures>({
@@ -134,7 +134,7 @@ export const middleware = createRPCMiddleware({
 ```typescript
 // src/client.ts
 
-import { createRPCClient } from "rpc-ts/client";
+import { createRPCClient } from "r19/client";
 import type { Procedures } from "./rpc-middleware";
 
 const client = createRPCClient<Procedures>({
@@ -151,7 +151,7 @@ Procedures can be provided as class instances using the `proceduresFromInstance(
 ```typescript
 // src/rpc-middleware.ts
 
-import { createRPCMiddleware, proceduresFromInstance } from "rpc-ts";
+import { createRPCMiddleware, proceduresFromInstance } from "r19";
 
 class Math {
 	add({ a, b }: { a: number; b: number }) {
@@ -173,7 +173,7 @@ export const middleware = createRPCMiddleware({
 ```typescript
 // src/rpc-middleware.ts
 
-import { createRPCMiddleware, proceduresFromInstance } from "rpc-ts";
+import { createRPCMiddleware, proceduresFromInstance } from "r19";
 
 class Math {
 	add({ a, b }: { a: number; b: number }) {
