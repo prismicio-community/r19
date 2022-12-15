@@ -21,9 +21,9 @@
 			"types": "./dist/index.d.ts"
 		},
 		"./client": {
-			"require": "./dist/client.cjs",
-			"import": "./dist/client.js",
-			"types": "./dist/client.d.ts"
+			"require": "./dist/client/index.cjs",
+			"import": "./dist/client/index.js",
+			"types": "./dist/client/index.d.ts"
 		},
 		"./package.json": "./package.json"
 	},
@@ -53,8 +53,8 @@
 	"dependencies": {
 		"busboy": "^1.6.0",
 		"devalue": "^4.2.0",
-		"h3": "^1.0.2",
-		"node-fetch": "^3.3.0"
+		"formdata-node": "^5.0.0",
+		"h3": "^1.0.2"
 	},
 	"devDependencies": {
 		"@size-limit/preset-small-lib": "^8.1.0",
@@ -66,6 +66,7 @@
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-prettier": "^4.2.1",
 		"eslint-plugin-tsdoc": "^0.2.17",
+		"node-fetch": "^3.3.0",
 		"prettier": "^2.8.1",
 		"prettier-plugin-jsdoc": "^0.4.2",
 		"size-limit": "^8.1.0",

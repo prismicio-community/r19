@@ -57,6 +57,7 @@
 
 import { Readable } from "node:stream";
 import { H3Event, sendStream, setHeaders } from "h3";
+import { FormData } from "formdata-node";
 
 /**
  * Reads from a given ReadableStream.

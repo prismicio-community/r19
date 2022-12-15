@@ -2,7 +2,16 @@ import { defineConfig } from "vite";
 import sdk from "vite-plugin-sdk";
 
 export default defineConfig({
-	plugins: [sdk()],
+	plugins: [
+		sdk({
+			internalDependencies: ["formdata-node"],
+		}),
+	],
+	build: {
+		lib: {
+			entry: ["./src/index.ts", "./src/client/index.ts"],
+		},
+	},
 	test: {
 		coverage: {
 			reporter: ["lcovonly", "text"],
