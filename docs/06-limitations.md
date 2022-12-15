@@ -26,7 +26,7 @@ export type Procedures = ExtractProcedures<typeof middleware>;
 ```typescript
 // src/client.ts
 
-import { createRPCClient } from "rpc-ts";
+import { createRPCClient } from "rpc-ts/client";
 import type { Procedures } from "./path/to/your/middleware";
 
 const client = createRPCClient<Procedures>({

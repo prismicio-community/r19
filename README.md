@@ -65,7 +65,7 @@ npm install rpc-ts
     ```typescript
     // src/index.ts
 
-    import { createRPCClient } from "rpc-ts";
+    import { createRPCClient } from "rpc-ts/client";
     import type { Procedures } from "./rpc-middleware";
 
     const client = createRPCClient<Procedures>({
