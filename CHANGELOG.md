@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/prismicio-community/r19/compare/v0.1.0...v0.1.1) (2022-12-16)
+
+
+### Bug Fixes
+
+* don't bundle `formdata-node` ([3a9edb7](https://github.com/prismicio-community/r19/commit/3a9edb7275e2305026d688d186943cf5d725cba4))
+* export `OmittableProcedures` ([#2](https://github.com/prismicio-community/r19/issues/2)) ([b3ea7b9](https://github.com/prismicio-community/r19/commit/b3ea7b9a473472bc2033e623b96904f1c8368131))
+* expose TypeScript types for `r19/client` entry ([e69f583](https://github.com/prismicio-community/r19/commit/e69f58380c5ee92308829bc934bdad83e5b1eb62))
+
+
+### Refactor
+
+* replace `node-fetch`'s `FormData` and `Blob` with `formdata-node` ([#3](https://github.com/prismicio-community/r19/issues/3)) ([32b1a63](https://github.com/prismicio-community/r19/commit/32b1a638979d65eb004e453d4cdacd460479b757))
+
 ## 0.1.0 (2022-12-15)
 
 
