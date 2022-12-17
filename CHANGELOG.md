@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/prismicio-community/r19/compare/v0.1.1...v0.1.2) (2022-12-17)
+
+
+### Bug Fixes
+
+* export `RPCClient` class ([c069d4e](https://github.com/prismicio-community/r19/commit/c069d4e4e2d9c31a7631368bad19b9c1678bc812))
+
 ### [0.1.1](https://github.com/prismicio-community/r19/compare/v0.1.0...v0.1.1) (2022-12-16)
 
 
