@@ -1,6 +1,5 @@
-export { createRPCClient } from "./createRPCClient";
+export { createRPCClient, RPCClient } from "./createRPCClient";
 export type {
-	RPCClient,
 	CreateRPCClientArgs,
 	ResponseLike,
 	FetchLike,
