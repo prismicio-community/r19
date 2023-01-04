@@ -10,4 +10,6 @@ export {
 	OmittableProcedures,
 } from "./proceduresFromInstance";
 
+export { handleRPCRequest } from "./handleRPCRequest";
+
 export { Procedure, Procedures, ExtractProcedures } from "./types";
