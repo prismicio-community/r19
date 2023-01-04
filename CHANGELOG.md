@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/prismicio-community/r19/compare/v0.1.2...v0.1.3) (2023-01-04)
+
+
+### Features
+
+* add `handleRPCRequest()` ([#4](https://github.com/prismicio-community/r19/issues/4)) ([48373bf](https://github.com/prismicio-community/r19/commit/48373bff83db00f7f441b87d56d436a85c6dc632))
+
+
+### Bug Fixes
+
+* revert previous commit ([d8e95b5](https://github.com/prismicio-community/r19/commit/d8e95b5bce755843eabf0464130447e17aeb3567))
+
+
+### Chore
+
+* **deps:** update dependencies ([1eaa3c9](https://github.com/prismicio-community/r19/commit/1eaa3c9cd3c44e7faee48360f8011a2158b20cb6))
+
 ### [0.1.2](https://github.com/prismicio-community/r19/compare/v0.1.1...v0.1.2) (2022-12-17)
 
 
