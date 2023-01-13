@@ -1,8 +1,9 @@
-import { formDataToObject } from "../lib/formDataToObject.client";
-import { isErrorLike } from "../lib/isErrorLike";
-import { objectToFormData } from "../lib/objectToFormData.client";
+import { encode, decode } from "@msgpack/msgpack";
 
-import { Procedures, Procedure } from "../types";
+import { replaceLeaves } from "../lib/replaceLeaves";
+import { isErrorLike } from "../lib/isErrorLike";
+
+import { Procedures, Procedure, ProcedureCallServerResponse } from "../types";
 
 const createArbitrarilyNestedFunction = <T>(
 	handler: (path: string[], args: unknown[]) => unknown,
@@ -68,11 +69,16 @@ type TransformProcedureReturnType<TReturnType> = TReturnType extends
 	: TReturnType;
 
 export type ResponseLike = {
-	formData(): Promise<FormData>;
+	arrayBuffer: () => Promise<ArrayBuffer>;
 };
 export type FetchLike = (
 	input: string,
-	init: { method: "POST"; body: FormData },
+	init: {
+		method: "POST";
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		body: any;
+		headers: Record<string, string>;
+	},
 ) => Promise<ResponseLike>;
 
 export type CreateRPCClientArgs = {
@@ -87,22 +93,43 @@ export const createRPCClient = <TProcedures extends Procedures>(
 		args.fetch || globalThis.fetch.bind(globalThis);
 
 	return createArbitrarilyNestedFunction(async (path, fnArgs) => {
-		const body = objectToFormData({
-			procedurePath: path,
-			procedureArgs: fnArgs[0],
-		});
+		const preparedProcedureArgs = await replaceLeaves(
+			fnArgs[0],
+			async (value) => {
+				if (value instanceof Blob) {
+					return new Uint8Array(await value.arrayBuffer());
+				}
+
+				if (typeof value === "function") {
+					throw new Error("r19 does not support function arguments.");
+				}
+
+				return value;
+			},
+		);
+
+		const body = encode(
+			{
+				procedurePath: path,
+				procedureArgs: preparedProcedureArgs,
+			},
+			{ ignoreUndefined: true },
+		);
 
 		const res = await resolvedFetch(args.serverURL, {
 			method: "POST",
 			body,
+			headers: {
+				"Content-Type": "application/msgpack",
+			},
 		});
 
-		const formData = await res.formData();
-		const resObject = formDataToObject(formData);
+		const arrayBuffer = await res.arrayBuffer();
+		const resObject = decode(
+			new Uint8Array(arrayBuffer),
+		) as ProcedureCallServerResponse;
 
-		if ("data" in resObject) {
-			return resObject.data;
-		} else {
+		if ("error" in resObject) {
 			const resError = resObject.error;
 
 			if (isErrorLike(resError)) {
@@ -119,6 +146,14 @@ export const createRPCClient = <TProcedures extends Procedures>(
 					},
 				);
 			}
+		} else {
+			return replaceLeaves(resObject.data, async (value) => {
+				if (value instanceof Uint8Array) {
+					return new Blob([value]);
+				}
+
+				return value;
+			});
 		}
 	});
 };

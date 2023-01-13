@@ -35,6 +35,10 @@ export type ProcedureCallServerArgs = {
 	procedureArgs: Record<string, unknown>;
 };
 
+export type ProcedureCallServerResponse =
+	| { data?: unknown }
+	| { error: unknown };
+
 export type ExtractProcedures<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	TRPCMiddleware extends RPCMiddleware<Procedures>,

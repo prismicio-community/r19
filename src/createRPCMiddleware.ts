@@ -3,15 +3,15 @@ import {
 	createRouter,
 	defineNodeMiddleware,
 	eventHandler,
-	getHeader,
 	NodeMiddleware,
 	readRawBody,
-	sendStream,
+	send,
 	setHeaders,
 } from "h3";
-import { handleRPCRequest } from "./handleRPCRequest";
+import { Buffer } from "node:buffer";
 
 import { Procedures } from "./types";
+import { handleRPCRequest } from "./handleRPCRequest";
 
 export type RPCMiddleware<TProcedures extends Procedures> = NodeMiddleware & {
 	_procedures: TProcedures;
@@ -29,10 +29,11 @@ export const createRPCMiddleware = <TProcedures extends Procedures>(
 	router.post(
 		"/",
 		eventHandler(async (event): Promise<void> => {
-			const { stream, headers, statusCode } = await handleRPCRequest({
+			const eventBody = await readRawBody(event, false);
+
+			const { body, headers, statusCode } = await handleRPCRequest({
 				procedures: args.procedures,
-				contentTypeHeader: getHeader(event, "Content-Type"),
-				body: await readRawBody(event),
+				body: eventBody,
 			});
 
 			if (statusCode) {
@@ -41,7 +42,7 @@ export const createRPCMiddleware = <TProcedures extends Procedures>(
 
 			setHeaders(event, headers);
 
-			return sendStream(event, stream);
+			return send(event, Buffer.from(body));
 		}),
 	);
 
