@@ -92,7 +92,7 @@ const _proceduresFromInstance = <TProceduresInstance>(
 				res[key as keyof typeof res] = _proceduresFromInstance(value, config, [
 					...path,
 					key,
-				]) as typeof res[keyof typeof res];
+				]) as (typeof res)[keyof typeof res];
 			}
 		}
 	}
