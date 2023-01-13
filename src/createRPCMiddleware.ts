@@ -8,9 +8,10 @@ import {
 	send,
 	setHeaders,
 } from "h3";
-import { handleRPCRequest } from "./handleRPCRequest";
+import { Buffer } from "node:buffer";
 
 import { Procedures } from "./types";
+import { handleRPCRequest } from "./handleRPCRequest";
 
 export type RPCMiddleware<TProcedures extends Procedures> = NodeMiddleware & {
 	_procedures: TProcedures;
@@ -41,7 +42,7 @@ export const createRPCMiddleware = <TProcedures extends Procedures>(
 
 			setHeaders(event, headers);
 
-			return send(event, body);
+			return send(event, Buffer.from(body));
 		}),
 	);
 

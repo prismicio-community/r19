@@ -1,4 +1,4 @@
 import { vi } from "vitest";
-import { Blob } from "node:buffer";
+import { Blob } from "node-fetch";
 
 vi.stubGlobal("Blob", Blob);

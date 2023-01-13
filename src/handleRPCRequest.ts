@@ -34,7 +34,7 @@ const findProcedure = (
 
 type HandleRPCRequestArgs<TProcedures extends Procedures> = {
 	procedures: TProcedures;
-	body: Buffer | undefined;
+	body: ArrayBuffer | Buffer | undefined;
 };
 
 type HandleRPCRequestReturnType = {
