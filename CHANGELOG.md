@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/prismicio-community/r19/compare/v0.1.3...v0.1.4) (2023-01-13)
+
+
+### Bug Fixes
+
+* change serialization format from FormData to MessagePack ([#5](https://github.com/prismicio-community/r19/issues/5)) ([408c5cb](https://github.com/prismicio-community/r19/commit/408c5cb0ea49e52e6a9dfdd37d9f0206fc04b4dd))
+
+
+### Chore
+
+* add all exports to Size Limit config ([58141fb](https://github.com/prismicio-community/r19/commit/58141fb5816af8f77807f77d74adcfcb806699ef))
+
 ### [0.1.3](https://github.com/prismicio-community/r19/compare/v0.1.2...v0.1.3) (2023-01-04)
 
 
