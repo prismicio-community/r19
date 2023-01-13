@@ -1,8 +1,9 @@
-import { isErrorLike } from "../lib/isErrorLike";
 import { encode, decode } from "@msgpack/msgpack";
 
-import { Procedures, Procedure, ProcedureCallServerResponse } from "../types";
 import { replaceLeaves } from "../lib/replaceLeaves";
+import { isErrorLike } from "../lib/isErrorLike";
+
+import { Procedures, Procedure, ProcedureCallServerResponse } from "../types";
 
 const createArbitrarilyNestedFunction = <T>(
 	handler: (path: string[], args: unknown[]) => unknown,

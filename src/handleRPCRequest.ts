@@ -2,9 +2,9 @@ import { Buffer } from "node:buffer";
 import { decode, encode } from "@msgpack/msgpack";
 
 import { isErrorLike } from "./lib/isErrorLike";
+import { replaceLeaves } from "./lib/replaceLeaves";
 
 import { Procedure, Procedures, ProcedureCallServerArgs } from "./types";
-import { replaceLeaves } from "./lib/replaceLeaves";
 
 const findProcedure = (
 	procedures: Procedures,
