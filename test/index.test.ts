@@ -186,7 +186,7 @@ it("does not support function arguments", async () => {
 		await client.ping({
 			fn: () => void 0,
 		});
-	}).rejects.toThrow(/cannot stringify a function/i);
+	}).rejects.toThrow(/does not support function arguments/i);
 
 	await server.close();
 });
@@ -206,7 +206,7 @@ it("does not support function return values", async () => {
 
 	await expect(async () => {
 		await client.ping();
-	}).rejects.toThrow(/unable to serialize server response/i);
+	}).rejects.toThrow(/does not support function return values/i);
 
 	consoleErrorSpy.mockRestore();
 
@@ -232,12 +232,12 @@ it("does not support class arguments", async () => {
 		await client.ping({
 			foo: new Foo(),
 		});
-	}).rejects.toThrow(/cannot stringify arbitrary non-POJOs/i);
+	}).rejects.toThrow(/args.foo.bar is not a function/i);
 
 	await server.close();
 });
 
-it("does not support class return values", async () => {
+it("does not support class return values with methods", async () => {
 	class Foo {
 		bar() {
 			return "baz";
@@ -252,15 +252,9 @@ it("does not support class return values", async () => {
 		fetch,
 	});
 
-	const consoleErrorSpy = vi
-		.spyOn(globalThis.console, "error")
-		.mockImplementation(() => void 0);
-
-	await expect(async () => {
-		await client.ping();
-	}).rejects.toThrow(/unable to serialize server response/i);
-
-	consoleErrorSpy.mockRestore();
+	const res = await client.ping();
 
 	await server.close();
+
+	expect(res).toStrictEqual({});
 });

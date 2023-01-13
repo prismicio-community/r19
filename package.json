@@ -58,9 +58,7 @@
 		"test": "npm run lint && npm run types && npm run unit && npm run build && npm run size"
 	},
 	"dependencies": {
-		"busboy": "^1.6.0",
-		"devalue": "^4.2.0",
-		"formdata-node": "^5.0.0",
+		"@msgpack/msgpack": "^2.8.0",
 		"h3": "^1.0.2"
 	},
 	"devDependencies": {

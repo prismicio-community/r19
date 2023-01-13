@@ -1,16 +1,10 @@
-import { Readable } from "node:stream";
 import { Buffer } from "node:buffer";
-import busboy from "busboy";
+import { decode, encode } from "@msgpack/msgpack";
 
-import { deserialize } from "./lib/deserialize";
-import { encodeFormData } from "./lib/encodeFormData";
 import { isErrorLike } from "./lib/isErrorLike";
-import { objectToFormData } from "./lib/objectToFormData.server";
-import { unflattenObject } from "./lib/unflattenObject";
-import { formDataToObject } from "./lib/formDataToObject.client";
 
-import { FORM_DATA_BOUNDARY_PREFIX } from "./constants";
 import { Procedure, Procedures, ProcedureCallServerArgs } from "./types";
+import { replaceLeaves } from "./lib/replaceLeaves";
 
 const findProcedure = (
 	procedures: Procedures,
@@ -38,120 +32,13 @@ const findProcedure = (
 	}
 };
 
-type ParseRPCClientArgs = {
-	contentTypeHeader: string;
-	body: string;
-};
-
-const readRPCClientArgs = async (args: ParseRPCClientArgs) => {
-	const bb = busboy({
-		headers: {
-			"content-type": args.contentTypeHeader,
-		},
-	});
-
-	const clientArgs = {} as Record<string, unknown>;
-
-	const promise = new Promise<ProcedureCallServerArgs>((resolve, reject) => {
-		bb.on("file", (name, file, _info) => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const chunks: any[] = [];
-
-			file.on("data", (data) => {
-				chunks.push(data);
-			});
-
-			file.on("close", () => {
-				clientArgs[name as keyof typeof clientArgs] = Buffer.concat(chunks);
-			});
-		});
-
-		bb.on("field", (name, value, _info) => {
-			clientArgs[name as keyof typeof clientArgs] = deserialize(value);
-		});
-
-		bb.on("close", () => {
-			const unflattenedArgs = unflattenObject(
-				clientArgs,
-			) as ProcedureCallServerArgs;
-
-			resolve(unflattenedArgs);
-		});
-
-		bb.on("error", (error) => {
-			reject(error);
-		});
-	});
-
-	Readable.from(args.body).pipe(bb);
-
-	return promise;
-};
-
-const isPlainObject = <Value>(
-	value: unknown,
-): value is Record<PropertyKey, Value> => {
-	if (typeof value !== "object" || value === null) {
-		return false;
-	}
-
-	const prototype = Object.getPrototypeOf(value);
-
-	return (
-		(prototype === null ||
-			prototype === Object.prototype ||
-			Object.getPrototypeOf(prototype) === null) &&
-		!(Symbol.toStringTag in value) &&
-		!(Symbol.iterator in value)
-	);
-};
-
-const prepareRes = (res: unknown) => {
-	if (Array.isArray(res)) {
-		const preparedRes: unknown[] = [];
-
-		for (let i = 0; i < res.length; i++) {
-			preparedRes[i] = prepareRes(res[i]);
-		}
-
-		return preparedRes;
-	}
-
-	if (isPlainObject(res)) {
-		const preparedRes: Record<PropertyKey, unknown> = {};
-
-		for (const key in res) {
-			preparedRes[key] = prepareRes(res[key as keyof typeof res]);
-		}
-
-		return preparedRes;
-	}
-
-	if (res instanceof Error || isErrorLike(res)) {
-		return {
-			name: res.name,
-			message: res.message,
-			stack: process.env.NODE_ENV === "development" ? res.stack : undefined,
-		};
-	}
-
-	return res;
-};
-
 type HandleRPCRequestArgs<TProcedures extends Procedures> = {
 	procedures: TProcedures;
-} & (
-	| {
-			contentTypeHeader: string | null | undefined;
-			body: string | undefined;
-	  }
-	| {
-			formData: FormData;
-	  }
-);
+	body: Buffer | undefined;
+};
 
 type HandleRPCRequestReturnType = {
-	stream: Readable;
+	body: Uint8Array;
 	headers: Record<string, string>;
 	statusCode?: number;
 };
@@ -159,33 +46,21 @@ type HandleRPCRequestReturnType = {
 export const handleRPCRequest = async <TProcedures extends Procedures>(
 	args: HandleRPCRequestArgs<TProcedures>,
 ): Promise<HandleRPCRequestReturnType> => {
-	let clientArgs: ProcedureCallServerArgs;
-
-	if ("body" in args) {
-		if (!args.body) {
-			throw new Error(
-				"Invalid request body. Only requests from an r19 client are accepted.",
-			);
-		}
-
-		if (!args.contentTypeHeader) {
-			throw new Error(
-				"Invalid Content-Type header. Only requests from an r19 client are accepted.",
-			);
-		}
-
-		clientArgs = await readRPCClientArgs({
-			contentTypeHeader: args.contentTypeHeader,
-			body: args.body,
-		});
-	} else {
-		clientArgs = formDataToObject(args.formData) as ProcedureCallServerArgs;
+	if (!args.body) {
+		throw new Error(
+			"Invalid request body. Only requests from an r19 client are accepted.",
+		);
 	}
 
+	const clientArgs = decode(args.body) as ProcedureCallServerArgs;
+
 	const procedure = findProcedure(args.procedures, clientArgs.procedurePath);
+	const headers = {
+		"Content-Type": "application/msgpack",
+	};
 
 	if (!procedure) {
-		const formData = objectToFormData({
+		const body = encode({
 			error: {
 				name: "RPCError",
 				message: `Invalid procedure name: ${clientArgs.procedurePath.join(
@@ -194,12 +69,8 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 			},
 		});
 
-		const { headers, stream } = encodeFormData(formData, {
-			boundaryPrefix: FORM_DATA_BOUNDARY_PREFIX,
-		});
-
 		return {
-			stream,
+			body,
 			headers,
 			statusCode: 500,
 		};
@@ -208,26 +79,51 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 	let res: unknown;
 
 	try {
-		res = await procedure(clientArgs.procedureArgs);
+		const procedureArgs = await replaceLeaves(
+			clientArgs.procedureArgs,
+			async (value) => {
+				if (value instanceof ArrayBuffer) {
+					return Buffer.from(value);
+				}
 
-		res = prepareRes(res);
+				return value;
+			},
+		);
+
+		res = await procedure(procedureArgs);
+
+		res = await replaceLeaves(res, async (value) => {
+			if (isErrorLike(value)) {
+				return {
+					name: value.name,
+					message: value.message,
+					stack:
+						process.env.NODE_ENV === "development" ? value.stack : undefined,
+				};
+			}
+
+			if (typeof value === "function") {
+				throw new Error("r19 does not support function return values.");
+			}
+
+			return value;
+		});
 	} catch (error) {
 		if (isErrorLike(error)) {
-			const formData = objectToFormData({
-				error: {
-					name: error.name,
-					message: error.message,
-					stack:
-						process.env.NODE_ENV === "development" ? error.stack : undefined,
+			const body = encode(
+				{
+					error: {
+						name: error.name,
+						message: error.message,
+						stack:
+							process.env.NODE_ENV === "development" ? error.stack : undefined,
+					},
 				},
-			});
-
-			const { headers, stream } = encodeFormData(formData, {
-				boundaryPrefix: FORM_DATA_BOUNDARY_PREFIX,
-			});
+				{ ignoreUndefined: true },
+			);
 
 			return {
-				stream,
+				body,
 				headers,
 				statusCode: 500,
 			};
@@ -237,23 +133,22 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 	}
 
 	try {
-		const formData = objectToFormData({
-			data: res,
-		});
-
-		const { headers, stream } = encodeFormData(formData, {
-			boundaryPrefix: FORM_DATA_BOUNDARY_PREFIX,
-		});
+		const body = encode(
+			{
+				data: res,
+			},
+			{ ignoreUndefined: true },
+		);
 
 		return {
-			stream,
+			body,
 			headers,
 		};
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error(error);
 
-			const formData = objectToFormData({
+			const body = encode({
 				error: {
 					name: "RPCError",
 					message:
@@ -261,12 +156,8 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 				},
 			});
 
-			const { headers, stream } = encodeFormData(formData, {
-				boundaryPrefix: FORM_DATA_BOUNDARY_PREFIX,
-			});
-
 			return {
-				stream,
+				body,
 				headers,
 				statusCode: 500,
 			};
