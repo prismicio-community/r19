@@ -52,7 +52,7 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 		);
 	}
 
-	const clientArgs = decode(args.body) as ProcedureCallServerArgs;
+	const clientArgs = decode(Buffer.from(args.body)) as ProcedureCallServerArgs;
 
 	const procedure = findProcedure(args.procedures, clientArgs.procedurePath);
 	const headers = {
