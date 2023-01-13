@@ -125,7 +125,9 @@ export const createRPCClient = <TProcedures extends Procedures>(
 		});
 
 		const arrayBuffer = await res.arrayBuffer();
-		const resObject = decode(arrayBuffer) as ProcedureCallServerResponse;
+		const resObject = decode(
+			new Uint8Array(arrayBuffer),
+		) as ProcedureCallServerResponse;
 
 		if ("error" in resObject) {
 			const resError = resObject.error;
