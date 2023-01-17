@@ -45,7 +45,7 @@ export const createRPCMiddleware = <TProcedures extends Procedures>(
 				res.setHeader(headerName, headers[headerName]);
 			}
 
-			res.end(body, "binary");
+			res.end(Buffer.from(body), "binary");
 		});
 	};
 
