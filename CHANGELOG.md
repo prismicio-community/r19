@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/prismicio-community/r19/compare/v0.1.5...v0.1.6) (2023-01-17)
+
+
+### Bug Fixes
+
+* properly close middleware using `next()` ([#7](https://github.com/prismicio-community/r19/issues/7)) ([756fe88](https://github.com/prismicio-community/r19/commit/756fe88476dd6959d3a097e2b71a9a05e9eac9f7))
+
 ### [0.1.5](https://github.com/prismicio-community/r19/compare/v0.1.4...v0.1.5) (2023-01-17)
 
 
