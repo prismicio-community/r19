@@ -4,16 +4,10 @@ import { Request, Response, NextFunction } from "express";
 import { Procedures } from "./types";
 import { handleRPCRequest } from "./handleRPCRequest";
 
-type ExpressMiddleware = (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-) => void;
-
-export type RPCMiddleware<TProcedures extends Procedures> =
-	ExpressMiddleware & {
-		_procedures: TProcedures;
-	};
+export type RPCMiddleware<TProcedures extends Procedures> = {
+	(req: Request, res: Response, next: NextFunction): void;
+	_procedures: TProcedures;
+};
 
 export type CreateRPCMiddlewareArgs<TProcedures extends Procedures> = {
 	procedures: TProcedures;
