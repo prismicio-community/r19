@@ -22,13 +22,11 @@ export type CreateRPCMiddlewareArgs<TProcedures extends Procedures> = {
 export const createRPCMiddleware = <TProcedures extends Procedures>(
 	args: CreateRPCMiddlewareArgs<TProcedures>,
 ): RPCMiddleware<TProcedures> => {
-	const fn: RPCMiddleware<TProcedures> = (req, res, next) => {
+	const fn: RPCMiddleware<TProcedures> = (req, res) => {
 		if (req.method !== "POST") {
 			res.statusCode = 405;
 
 			res.end();
-
-			next();
 
 			return;
 		}
@@ -40,11 +38,9 @@ export const createRPCMiddleware = <TProcedures extends Procedures>(
 		});
 
 		req.on("end", async () => {
-			const requestBody = Buffer.concat(requestBodyChunks);
-
 			const { body, headers, statusCode } = await handleRPCRequest({
 				procedures: args.procedures,
-				body: requestBody,
+				body: Buffer.concat(requestBodyChunks),
 			});
 
 			if (statusCode) {
@@ -55,11 +51,7 @@ export const createRPCMiddleware = <TProcedures extends Procedures>(
 				res.setHeader(headerName, headers[headerName]);
 			}
 
-			res.write(body, "binary");
-
-			res.end(null, "binary");
-
-			next();
+			res.end(body, "binary");
 		});
 	};
 

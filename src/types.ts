@@ -45,9 +45,3 @@ export type ExtractProcedures<
 > = TRPCMiddleware extends RPCMiddleware<infer TProcedures>
 	? TProcedures
 	: never;
-
-export type ErrorLike = {
-	name: string;
-	message: string;
-	stack?: string;
-};

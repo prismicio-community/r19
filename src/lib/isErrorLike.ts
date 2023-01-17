@@ -1,4 +1,8 @@
-import { ErrorLike } from "../types";
+export type ErrorLike = {
+	name: string;
+	message: string;
+	stack?: string;
+};
 
 export const isErrorLike = (error: unknown): error is ErrorLike => {
 	return (
