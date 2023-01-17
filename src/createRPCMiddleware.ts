@@ -16,13 +16,13 @@ export type CreateRPCMiddlewareArgs<TProcedures extends Procedures> = {
 export const createRPCMiddleware = <TProcedures extends Procedures>(
 	args: CreateRPCMiddlewareArgs<TProcedures>,
 ): RPCMiddleware<TProcedures> => {
-	const fn: RPCMiddleware<TProcedures> = (req, res) => {
+	const fn: RPCMiddleware<TProcedures> = (req, res, next) => {
 		if (req.method !== "POST") {
 			res.statusCode = 405;
 
 			res.end();
 
-			return;
+			return next();
 		}
 
 		const requestBodyChunks: Buffer[] = [];
@@ -46,6 +46,8 @@ export const createRPCMiddleware = <TProcedures extends Procedures>(
 			}
 
 			res.end(Buffer.from(body), "binary");
+
+			next();
 		});
 	};
 
