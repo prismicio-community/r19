@@ -1,19 +1,11 @@
-import {
-	createEvent,
-	createRouter,
-	defineNodeMiddleware,
-	eventHandler,
-	NodeMiddleware,
-	readRawBody,
-	send,
-	setHeaders,
-} from "h3";
 import { Buffer } from "node:buffer";
+import { Request, Response, NextFunction } from "express";
 
 import { Procedures } from "./types";
 import { handleRPCRequest } from "./handleRPCRequest";
 
-export type RPCMiddleware<TProcedures extends Procedures> = NodeMiddleware & {
+export type RPCMiddleware<TProcedures extends Procedures> = {
+	(req: Request, res: Response, next: NextFunction): void;
 	_procedures: TProcedures;
 };
 
@@ -24,31 +16,40 @@ export type CreateRPCMiddlewareArgs<TProcedures extends Procedures> = {
 export const createRPCMiddleware = <TProcedures extends Procedures>(
 	args: CreateRPCMiddlewareArgs<TProcedures>,
 ): RPCMiddleware<TProcedures> => {
-	const router = createRouter();
+	const fn: RPCMiddleware<TProcedures> = (req, res) => {
+		if (req.method !== "POST") {
+			res.statusCode = 405;
 
-	router.post(
-		"/",
-		eventHandler(async (event): Promise<void> => {
-			const eventBody = await readRawBody(event, false);
+			res.end();
 
+			return;
+		}
+
+		const requestBodyChunks: Buffer[] = [];
+
+		req.on("data", (chunk) => {
+			requestBodyChunks.push(chunk);
+		});
+
+		req.on("end", async () => {
 			const { body, headers, statusCode } = await handleRPCRequest({
 				procedures: args.procedures,
-				body: eventBody,
+				body: Buffer.concat(requestBodyChunks),
 			});
 
 			if (statusCode) {
-				event.node.res.statusCode = statusCode;
+				res.statusCode = statusCode;
 			}
 
-			setHeaders(event, headers);
+			for (const headerName in headers) {
+				res.setHeader(headerName, headers[headerName]);
+			}
 
-			return send(event, Buffer.from(body));
-		}),
-	);
+			res.end(Buffer.from(body), "binary");
+		});
+	};
 
-	return defineNodeMiddleware(async (req, res) => {
-		const event = createEvent(req, res);
+	fn._procedures = args.procedures;
 
-		return await router.handler(event);
-	}) as RPCMiddleware<TProcedures>;
+	return fn;
 };
