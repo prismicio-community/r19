@@ -1,11 +1,12 @@
 import { Buffer } from "node:buffer";
-import { Request, Response, NextFunction } from "express";
+import { IncomingMessage, ServerResponse } from "node:http";
 
 import { Procedures } from "./types";
 import { handleRPCRequest } from "./handleRPCRequest";
 
 export type RPCMiddleware<TProcedures extends Procedures> = {
-	(req: Request, res: Response, next: NextFunction): void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	(req: IncomingMessage, res: ServerResponse, next: (err?: Error) => any): void;
 	_procedures: TProcedures;
 };
 
@@ -16,13 +17,13 @@ export type CreateRPCMiddlewareArgs<TProcedures extends Procedures> = {
 export const createRPCMiddleware = <TProcedures extends Procedures>(
 	args: CreateRPCMiddlewareArgs<TProcedures>,
 ): RPCMiddleware<TProcedures> => {
-	const fn: RPCMiddleware<TProcedures> = (req, res) => {
+	const fn: RPCMiddleware<TProcedures> = (req, res, next) => {
 		if (req.method !== "POST") {
 			res.statusCode = 405;
 
 			res.end();
 
-			return;
+			return next();
 		}
 
 		const requestBodyChunks: Buffer[] = [];
@@ -46,6 +47,8 @@ export const createRPCMiddleware = <TProcedures extends Procedures>(
 			}
 
 			res.end(Buffer.from(body), "binary");
+
+			next();
 		});
 	};
 
