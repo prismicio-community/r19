@@ -1,11 +1,12 @@
 import { Buffer } from "node:buffer";
-import { Request, Response, NextFunction } from "express";
+import { IncomingMessage, ServerResponse } from "node:http";
 
 import { Procedures } from "./types";
 import { handleRPCRequest } from "./handleRPCRequest";
 
 export type RPCMiddleware<TProcedures extends Procedures> = {
-	(req: Request, res: Response, next: NextFunction): void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	(req: IncomingMessage, res: ServerResponse, next: (err?: Error) => any): void;
 	_procedures: TProcedures;
 };
 
