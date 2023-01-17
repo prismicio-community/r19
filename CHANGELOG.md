@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.5](https://github.com/prismicio-community/r19/compare/v0.1.4...v0.1.5) (2023-01-17)
+
+
+### Bug Fixes
+
+* declare package as side-effect-free ([fb91d2a](https://github.com/prismicio-community/r19/commit/fb91d2abc274f82c8e8fc26bfc802ba8397e1acd))
+
+
+### Refactor
+
+* remove h3 dependency ([#6](https://github.com/prismicio-community/r19/issues/6)) ([640ac7c](https://github.com/prismicio-community/r19/commit/640ac7c2b7652509205f17f9274a01e99730cbe8))
+
 ### [0.1.4](https://github.com/prismicio-community/r19/compare/v0.1.3...v0.1.4) (2023-01-13)
 
 
