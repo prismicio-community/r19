@@ -17,8 +17,8 @@ flowchart TB
     F[Deserialize return value]-->G["return value (#quot;pong#quot;)"]
     end
 
-    client1 -- "HTTP Request (multipart/form-data)" --> server
-    server -- "HTTP Response (multipart/form-data)" --> client2
+    client1 -- "HTTP Request (multipart/msgpack)" --> server
+    server -- "HTTP Response (multipart/msgpack)" --> client2
 ```
 
 The server contains all of the procedures and runtime logic.
@@ -29,15 +29,11 @@ The client is mostly a wrapper around `fetch` with serialization and deserializa
 
 `r19` supports the following types of data:
 
-- Any data supported by [`devalue`][devalue]
+- Any data supported by [`@msgpack/msgpack`][msgpack-javascript]
 - Binary (images, audio, video, etc.)
 - Nested objects
 
-`r19` uses [`FormData`][mdn-formdata] as its serialization format. `FormData` supports binary data (via [`Blob`][mdn-blob]) and strings.
-
-Non-binary data is serialized before being added to `FormData` using [`devalue`][devalue]. Numbers, `undefined`, `null`, objects, arrays, and more are supported using `devalue`.
-
-`FormData` is a single-level key-value serialization format which does not support nested objects. Data is flattened in transit and unflattened when received using a modified version of [`nest-deep`][nest-deep].
+`r19` uses [MessagePack][msgpack] as its serialization format. MessagePack supports JavaScript primitives, `undefined`, `null`, objects, arrays, `Date`s, binary, and more.
 
 ## Errors
 
@@ -103,7 +99,5 @@ This type accepts arguments via the `TArgs` type parameter and transforms them b
 
 If other transformations are needed, they can be added with new conditions.
 
-[mdn-formdata]: http://developer.mozilla.org/en-US/docs/Web/API/FormData
-[mdn-blob]: http://developer.mozilla.org/en-US/docs/Web/API/Blob
-[devalue]: https://github.com/Rich-Harris/devalue
-[nest-deep]: https://github.com/borm/nest-deep
+[msgpack]: https://msgpack.org/
+[msgpack-javascript]: https://github.com/msgpack/msgpack-javascript

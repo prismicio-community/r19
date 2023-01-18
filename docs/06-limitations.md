@@ -41,7 +41,7 @@ await client.write({
 
 ## Non-serializable data
 
-Since data is passed between a client and a server, procedure arguments and return values must be serialized. `r19` uses [`FormData`][mdn-formdata] and [`devalue`][devalue] to send and serialize data.
+Since data is passed between a client and a server, procedure arguments and return values must be serialized. `r19` uses [MessagePack][msgpack] to serialize data.
 
 Most JavaScript data can be used, but functions and classs cannot be serialized.
 
@@ -90,5 +90,4 @@ Errors thrown by procedures are caught on the server, returned to the client, an
 
 Properties like `cause` or ones stored in custom errors are ignored.
 
-[mdn-formdata]: https://developer.mozilla.org/en-US/docs/Web/API/FormData
-[devalue]: https://github.com/Rich-Harris/devalue
+[msgpack]: https://msgpack.org/
