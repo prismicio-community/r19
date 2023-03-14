@@ -1,7 +1,7 @@
 import { Buffer } from "node:buffer";
 import { IncomingMessage, ServerResponse } from "node:http";
 
-import { Procedures } from "./types";
+import { OnErrorEventHandler, Procedures } from "./types";
 import { handleRPCRequest } from "./handleRPCRequest";
 
 export type RPCMiddleware<TProcedures extends Procedures> = {
@@ -12,6 +12,7 @@ export type RPCMiddleware<TProcedures extends Procedures> = {
 
 export type CreateRPCMiddlewareArgs<TProcedures extends Procedures> = {
 	procedures: TProcedures;
+	onError?: OnErrorEventHandler;
 };
 
 export const createRPCMiddleware = <TProcedures extends Procedures>(
@@ -36,6 +37,7 @@ export const createRPCMiddleware = <TProcedures extends Procedures>(
 			const { body, headers, statusCode } = await handleRPCRequest({
 				procedures: args.procedures,
 				body: Buffer.concat(requestBodyChunks),
+				onError: args.onError,
 			});
 
 			if (statusCode) {

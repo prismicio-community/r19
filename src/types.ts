@@ -1,4 +1,5 @@
 import { RPCMiddleware } from "./createRPCMiddleware";
+import { ErrorLike } from "./lib/isErrorLike";
 
 export type Procedures = Record<
 	string,
@@ -45,3 +46,9 @@ export type ExtractProcedures<
 > = TRPCMiddleware extends RPCMiddleware<infer TProcedures>
 	? TProcedures
 	: never;
+
+export type OnErrorEventHandler = (
+	args: {
+		error: ErrorLike;
+	} & ProcedureCallServerArgs,
+) => Promise<void> | void;

@@ -4,7 +4,12 @@ import { decode, encode } from "@msgpack/msgpack";
 import { isErrorLike } from "./lib/isErrorLike";
 import { replaceLeaves } from "./lib/replaceLeaves";
 
-import { Procedure, Procedures, ProcedureCallServerArgs } from "./types";
+import {
+	Procedure,
+	Procedures,
+	ProcedureCallServerArgs,
+	OnErrorEventHandler,
+} from "./types";
 
 const findProcedure = (
 	procedures: Procedures,
@@ -35,6 +40,7 @@ const findProcedure = (
 type HandleRPCRequestArgs<TProcedures extends Procedures> = {
 	procedures: TProcedures;
 	body: ArrayBuffer | Buffer | undefined;
+	onError?: OnErrorEventHandler;
 };
 
 type HandleRPCRequestReturnType = {
@@ -60,13 +66,15 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 	};
 
 	if (!procedure) {
-		const body = encode({
-			error: {
-				name: "RPCError",
-				message: `Invalid procedure name: ${clientArgs.procedurePath.join(
-					".",
-				)}`,
-			},
+		const rawBody = {
+			name: "RPCError",
+			message: `Invalid procedure name: ${clientArgs.procedurePath.join(".")}`,
+		};
+		const body = encode(rawBody);
+
+		args.onError?.({
+			error: new Error(`${rawBody.name}: ${rawBody.message}`),
+			...clientArgs,
 		});
 
 		return {
@@ -94,6 +102,8 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 
 		res = await replaceLeaves(res, async (value) => {
 			if (isErrorLike(value)) {
+				args.onError?.({ error: value, ...clientArgs });
+
 				return {
 					name: value.name,
 					message: value.message,
@@ -121,6 +131,8 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 				},
 				{ ignoreUndefined: true },
 			);
+
+			args.onError?.({ error, ...clientArgs });
 
 			return {
 				body,
@@ -155,6 +167,8 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 						"Unable to serialize server response. Check the server log for details.",
 				},
 			});
+
+			args.onError?.({ error, ...clientArgs });
 
 			return {
 				body,
