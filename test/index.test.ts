@@ -4,17 +4,24 @@ import { AddressInfo } from "node:net";
 import express from "express";
 import fetch from "node-fetch";
 
-import { createRPCMiddleware, proceduresFromInstance } from "../src";
+import {
+	createRPCMiddleware,
+	proceduresFromInstance,
+	OnErrorEventHandler,
+} from "../src";
 import { createRPCClient } from "../src/client";
 
 type StartRPCTestServerArgs = {
 	procedures: Parameters<typeof createRPCMiddleware>[0]["procedures"];
+	onError?: OnErrorEventHandler;
 };
 
 const startRPCTestServer = (args: StartRPCTestServerArgs) => {
 	const app = express();
 
-	app.use(createRPCMiddleware({ procedures: args.procedures }));
+	app.use(
+		createRPCMiddleware({ procedures: args.procedures, onError: args.onError }),
+	);
 
 	const server = app.listen();
 
@@ -261,6 +268,35 @@ it("does not support class return values with methods", async () => {
 	server.close();
 
 	expect(res).toStrictEqual({});
+});
+
+it("supports `onError` event handler", async () => {
+	const procedures = {
+		throw: (args: { input: string }) => {
+			throw new Error(args.input);
+		},
+	};
+	const onError = vi.fn();
+	const server = startRPCTestServer({ procedures, onError });
+
+	const client = createRPCClient<typeof procedures>({
+		serverURL: server.url,
+		fetch,
+	});
+
+	await expect(client.throw({ input: "foo" })).rejects.toMatchInlineSnapshot(
+		"[Error: foo]",
+	);
+
+	server.close();
+
+	expect(onError).toHaveBeenLastCalledWith({
+		error: expect.any(Error),
+		procedureArgs: {
+			input: "foo",
+		},
+		procedurePath: ["throw"],
+	});
 });
 
 it("returns 405 if POST method is not used", async () => {
