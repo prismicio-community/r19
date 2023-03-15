@@ -361,7 +361,7 @@ it("throws if a non-existent procedure is called", async () => {
 
 	const expectedError = expect.objectContaining({
 		name: "R19Error",
-		message: expect.stringMatching(/invalid procedure name/i),
+		message: expect.stringMatching(/invalid procedure name: pong/i),
 		procedurePath: ["pong"],
 		procedureArgs: { input: "foo" },
 	});

@@ -67,10 +67,13 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 	};
 
 	if (!procedure) {
-		const error = new R19Error("Invalid procedure name", {
-			procedurePath: clientArgs.procedurePath,
-			procedureArgs: clientArgs.procedureArgs,
-		});
+		const error = new R19Error(
+			`Invalid procedure name: ${clientArgs.procedurePath.join(".")}`,
+			{
+				procedurePath: clientArgs.procedurePath,
+				procedureArgs: clientArgs.procedureArgs,
+			},
+		);
 
 		const body = encode(
 			{

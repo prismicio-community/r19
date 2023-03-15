@@ -2,6 +2,7 @@ export type ErrorLike = {
 	name: string;
 	message: string;
 	stack?: string;
+	cause?: unknown;
 };
 
 export const isErrorLike = (error: unknown): error is ErrorLike => {
