@@ -20,7 +20,7 @@ export const middleware = createRPCMiddleware({
 		},
 	},
 	// An optional error event handler
-	onError: ({ error, procedurePath, procedureArgs }) => { ... }
+	onError: ({ error, procedurePath, procedureArgs }) => { ... },
 });
 
 // This type will be passed to the RPC client.
