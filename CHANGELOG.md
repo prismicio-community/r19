@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.7-alpha.0](https://github.com/prismicio-community/r19/compare/v0.1.6...v0.1.7-alpha.0) (2023-03-15)
+
+
+### Features
+
+* add `onError` event handler ([7da6924](https://github.com/prismicio-community/r19/commit/7da6924f53c787bb5bf98af617833d030e2b380f))
+
+
+### Documentation
+
+* document `onError` event handler ([2c558db](https://github.com/prismicio-community/r19/commit/2c558dbbc17424cbdb7fbc80bce41c7296a4a7c0))
+* update docs to reflect MessagePack usage ([c600aaa](https://github.com/prismicio-community/r19/commit/c600aaacda8b5be609e0b7c8ee5c0761b93e41c9))
+
 ### [0.1.6](https://github.com/prismicio-community/r19/compare/v0.1.5...v0.1.6) (2023-01-17)
 
 
