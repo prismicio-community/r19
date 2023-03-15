@@ -11,6 +11,7 @@ import {
 	OnErrorEventHandler,
 } from "./types";
 import { R19Error } from "./R19Error";
+import { isR19ErrorLike } from "./isR19ErrorLike";
 
 const findProcedure = (
 	procedures: Procedures,
@@ -130,12 +131,16 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 		if (isErrorLike(error)) {
 			const body = encode(
 				{
-					error: {
-						name: error.name,
-						message: error.message,
-						stack:
-							process.env.NODE_ENV === "development" ? error.stack : undefined,
-					},
+					error: isR19ErrorLike(error)
+						? error
+						: {
+								name: error.name,
+								message: error.message,
+								stack:
+									process.env.NODE_ENV === "development"
+										? error.stack
+										: undefined,
+						  },
 				},
 				{ ignoreUndefined: true },
 			);

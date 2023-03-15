@@ -6,6 +6,7 @@ import { isErrorLike } from "../lib/isErrorLike";
 import { Procedures, Procedure, ProcedureCallServerResponse } from "../types";
 import { R19Error } from "../R19Error";
 import { isPlainObject } from "../lib/isPlainObject";
+import { isR19ErrorLike } from "../isR19ErrorLike";
 
 const createArbitrarilyNestedFunction = <T>(
 	handler: (path: string[], args: unknown[]) => unknown,
@@ -149,11 +150,16 @@ export const createRPCClient = <TProcedures extends Procedures>(
 		if ("error" in resObject) {
 			const resError = resObject.error;
 
-			if (isErrorLike(resError)) {
+			if (isR19ErrorLike(resError)) {
 				const error = new R19Error(resError.message, {
 					procedurePath,
 					procedureArgs,
 				});
+				error.stack = resError.stack;
+
+				throw error;
+			} else if (isErrorLike(resError)) {
+				const error = new Error(resError.message);
 				error.name = resError.name;
 				error.stack = resError.stack;
 
