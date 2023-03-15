@@ -10,6 +10,7 @@ import {
 	ProcedureCallServerArgs,
 	OnErrorEventHandler,
 } from "./types";
+import { R19Error } from "./R19Error";
 
 const findProcedure = (
 	procedures: Procedures,
@@ -66,16 +67,19 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 	};
 
 	if (!procedure) {
-		const rawBody = {
-			name: "RPCError",
-			message: `Invalid procedure name: ${clientArgs.procedurePath.join(".")}`,
-		};
-		const body = encode(rawBody);
-
-		args.onError?.({
-			error: new Error(`${rawBody.name}: ${rawBody.message}`),
-			...clientArgs,
+		const error = new R19Error("Invalid procedure name", {
+			procedurePath: clientArgs.procedurePath,
+			procedureArgs: clientArgs.procedureArgs,
 		});
+
+		const body = encode(
+			{
+				error,
+			},
+			{ ignoreUndefined: true },
+		);
+
+		args.onError?.({ error, ...clientArgs });
 
 		return {
 			body,
@@ -102,8 +106,6 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 
 		res = await replaceLeaves(res, async (value) => {
 			if (isErrorLike(value)) {
-				args.onError?.({ error: value, ...clientArgs });
-
 				return {
 					name: value.name,
 					message: value.message,
@@ -113,7 +115,10 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 			}
 
 			if (typeof value === "function") {
-				throw new Error("r19 does not support function return values.");
+				throw new R19Error("r19 does not support function return values.", {
+					procedurePath: clientArgs.procedurePath,
+					procedureArgs: clientArgs.procedureArgs,
+				});
 			}
 
 			return value;
@@ -158,15 +163,18 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 		};
 	} catch (error) {
 		if (error instanceof Error) {
-			console.error(error);
-
-			const body = encode({
-				error: {
-					name: "RPCError",
-					message:
-						"Unable to serialize server response. Check the server log for details.",
+			const rpcError = new R19Error(
+				"Unable to serialize server response. Check the server log for details.",
+				{
+					procedurePath: clientArgs.procedurePath,
+					procedureArgs: clientArgs.procedureArgs,
+					cause: error,
 				},
-			});
+			);
+
+			console.error(rpcError);
+
+			const body = encode(rpcError);
 
 			args.onError?.({ error, ...clientArgs });
 

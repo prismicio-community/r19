@@ -186,42 +186,59 @@ it("supports namespaced procedures", async () => {
 
 it("does not support function arguments", async () => {
 	const procedures = { ping: (args: { fn: () => void }) => args.fn() };
-	const server = startRPCTestServer({ procedures });
+	const onError = vi.fn();
+	const server = startRPCTestServer({ procedures, onError });
 
 	const client = createRPCClient<typeof procedures>({
 		serverURL: server.url,
 		fetch,
 	});
 
+	const fnArg = () => void 0;
 	await expect(async () => {
-		await client.ping({
-			fn: () => void 0,
-		});
-	}).rejects.toThrow(/does not support function arguments/i);
+		await client.ping({ fn: fnArg });
+	}).rejects.toThrow(
+		expect.objectContaining({
+			name: "R19Error",
+			message: expect.stringMatching(/does not support function arguments/i),
+			procedurePath: ["ping"],
+			procedureArgs: { fn: fnArg },
+		}),
+	);
 
 	server.close();
+
+	expect(onError).not.toHaveBeenCalled();
 });
 
 it("does not support function return values", async () => {
 	const procedures = { ping: () => () => void 0 };
-	const server = startRPCTestServer({ procedures });
+	const onError = vi.fn();
+	const server = startRPCTestServer({ procedures, onError });
 
 	const client = createRPCClient<typeof procedures>({
 		serverURL: server.url,
 		fetch,
 	});
 
-	const consoleErrorSpy = vi
-		.spyOn(globalThis.console, "error")
-		.mockImplementation(() => void 0);
+	const expectedError = expect.objectContaining({
+		name: "R19Error",
+		message: expect.stringMatching(/does not support function return values/i),
+		procedurePath: ["ping"],
+		procedureArgs: undefined,
+	});
 
 	await expect(async () => {
 		await client.ping();
-	}).rejects.toThrow(/does not support function return values/i);
-
-	consoleErrorSpy.mockRestore();
+	}).rejects.toThrow(expectedError);
 
 	server.close();
+
+	expect(onError).toHaveBeenCalledWith({
+		error: expectedError,
+		procedurePath: ["ping"],
+		procedureArgs: undefined,
+	});
 });
 
 it("does not support class arguments", async () => {
@@ -232,20 +249,31 @@ it("does not support class arguments", async () => {
 	}
 
 	const procedures = { ping: (args: { foo: Foo }) => args.foo.bar() };
-	const server = startRPCTestServer({ procedures });
+	const onError = vi.fn();
+	const server = startRPCTestServer({ procedures, onError });
 
 	const client = createRPCClient<typeof procedures>({
 		serverURL: server.url,
 		fetch,
 	});
 
+	const expectedError = expect.objectContaining({
+		name: "TypeError",
+		message: expect.stringMatching(/args.foo.bar is not a function/i),
+	});
+
+	const fooArg = new Foo();
 	await expect(async () => {
-		await client.ping({
-			foo: new Foo(),
-		});
-	}).rejects.toThrow(/args.foo.bar is not a function/i);
+		await client.ping({ foo: fooArg });
+	}).rejects.toThrow(expectedError);
 
 	server.close();
+
+	expect(onError).toHaveBeenCalledWith({
+		error: expectedError,
+		procedurePath: ["ping"],
+		procedureArgs: { foo: fooArg },
+	});
 });
 
 it("does not support class return values with methods", async () => {
@@ -256,7 +284,8 @@ it("does not support class return values with methods", async () => {
 	}
 
 	const procedures = { ping: () => new Foo() };
-	const server = startRPCTestServer({ procedures });
+	const onError = vi.fn();
+	const server = startRPCTestServer({ procedures, onError });
 
 	const client = createRPCClient<typeof procedures>({
 		serverURL: server.url,
@@ -268,6 +297,8 @@ it("does not support class return values with methods", async () => {
 	server.close();
 
 	expect(res).toStrictEqual({});
+
+	expect(onError).not.toHaveBeenCalled();
 });
 
 it("supports `onError` event handler", async () => {
@@ -284,14 +315,15 @@ it("supports `onError` event handler", async () => {
 		fetch,
 	});
 
-	await expect(client.throw({ input: "foo" })).rejects.toMatchInlineSnapshot(
-		"[Error: foo]",
-	);
+	await expect(client.throw({ input: "foo" })).rejects.toThrow("foo");
 
 	server.close();
 
 	expect(onError).toHaveBeenLastCalledWith({
-		error: expect.any(Error),
+		error: expect.objectContaining({
+			name: "Error",
+			message: "foo",
+		}),
 		procedureArgs: {
 			input: "foo",
 		},
@@ -315,4 +347,35 @@ it("returns 405 if POST method is not used", async () => {
 	server.close();
 
 	expect(res.status).toBe(405);
+});
+
+it("throws if a non-existent procedure is called", async () => {
+	const procedures = { ping: () => void 0 };
+	const onError = vi.fn();
+	const server = startRPCTestServer({ procedures, onError });
+
+	const client = createRPCClient<typeof procedures>({
+		serverURL: server.url,
+		fetch,
+	});
+
+	const expectedError = expect.objectContaining({
+		name: "R19Error",
+		message: expect.stringMatching(/invalid procedure name/i),
+		procedurePath: ["pong"],
+		procedureArgs: { input: "foo" },
+	});
+
+	await expect(async () => {
+		// @ts-expect-error - We are purposely calling a non-existent procedure.
+		await client.pong({ input: "foo" });
+	}).rejects.toThrow(expectedError);
+
+	server.close();
+
+	expect(onError).toHaveBeenCalledWith({
+		error: expectedError,
+		procedurePath: ["pong"],
+		procedureArgs: { input: "foo" },
+	});
 });
