@@ -13,7 +13,6 @@ export {
 export { handleRPCRequest } from "./handleRPCRequest";
 
 export { R19Error } from "./R19Error";
-export { isR19ErrorLike } from "./isR19ErrorLike";
 
 export {
 	Procedure,

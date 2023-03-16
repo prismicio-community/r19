@@ -2,6 +2,7 @@ import { Buffer } from "node:buffer";
 import { decode, encode } from "@msgpack/msgpack";
 
 import { isErrorLike } from "./lib/isErrorLike";
+import { isR19ErrorLike } from "./lib/isR19ErrorLike";
 import { replaceLeaves } from "./lib/replaceLeaves";
 
 import {
@@ -11,7 +12,6 @@ import {
 	OnErrorEventHandler,
 } from "./types";
 import { R19Error } from "./R19Error";
-import { isR19ErrorLike } from "./isR19ErrorLike";
 
 const findProcedure = (
 	procedures: Procedures,

@@ -1,12 +1,12 @@
 import { encode, decode } from "@msgpack/msgpack";
 
-import { replaceLeaves } from "../lib/replaceLeaves";
 import { isErrorLike } from "../lib/isErrorLike";
+import { isPlainObject } from "../lib/isPlainObject";
+import { isR19ErrorLike } from "../lib/isR19ErrorLike";
+import { replaceLeaves } from "../lib/replaceLeaves";
 
 import { Procedures, Procedure, ProcedureCallServerResponse } from "../types";
 import { R19Error } from "../R19Error";
-import { isPlainObject } from "../lib/isPlainObject";
-import { isR19ErrorLike } from "../isR19ErrorLike";
 
 const createArbitrarilyNestedFunction = <T>(
 	handler: (path: string[], args: unknown[]) => unknown,

@@ -1,4 +1,4 @@
-import { ErrorLike, isErrorLike } from "./lib/isErrorLike";
+import { ErrorLike, isErrorLike } from "./isErrorLike";
 
 export type R19ErrorLike = ErrorLike & {
 	procedurePath?: string[];
