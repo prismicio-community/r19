@@ -12,4 +12,11 @@ export {
 
 export { handleRPCRequest } from "./handleRPCRequest";
 
-export { Procedure, Procedures, ExtractProcedures } from "./types";
+export { R19Error } from "./R19Error";
+
+export {
+	Procedure,
+	Procedures,
+	ExtractProcedures,
+	OnErrorEventHandler,
+} from "./types";

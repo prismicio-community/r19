@@ -2,9 +2,16 @@ import { Buffer } from "node:buffer";
 import { decode, encode } from "@msgpack/msgpack";
 
 import { isErrorLike } from "./lib/isErrorLike";
+import { isR19ErrorLike } from "./lib/isR19ErrorLike";
 import { replaceLeaves } from "./lib/replaceLeaves";
 
-import { Procedure, Procedures, ProcedureCallServerArgs } from "./types";
+import {
+	Procedure,
+	Procedures,
+	ProcedureCallServerArgs,
+	OnErrorEventHandler,
+} from "./types";
+import { R19Error } from "./R19Error";
 
 const findProcedure = (
 	procedures: Procedures,
@@ -35,6 +42,7 @@ const findProcedure = (
 type HandleRPCRequestArgs<TProcedures extends Procedures> = {
 	procedures: TProcedures;
 	body: ArrayBuffer | Buffer | undefined;
+	onError?: OnErrorEventHandler;
 };
 
 type HandleRPCRequestReturnType = {
@@ -60,14 +68,22 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 	};
 
 	if (!procedure) {
-		const body = encode({
-			error: {
-				name: "RPCError",
-				message: `Invalid procedure name: ${clientArgs.procedurePath.join(
-					".",
-				)}`,
+		const error = new R19Error(
+			`Invalid procedure name: ${clientArgs.procedurePath.join(".")}`,
+			{
+				procedurePath: clientArgs.procedurePath,
+				procedureArgs: clientArgs.procedureArgs,
 			},
-		});
+		);
+
+		const body = encode(
+			{
+				error,
+			},
+			{ ignoreUndefined: true },
+		);
+
+		args.onError?.({ error, ...clientArgs });
 
 		return {
 			body,
@@ -103,7 +119,10 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 			}
 
 			if (typeof value === "function") {
-				throw new Error("r19 does not support function return values.");
+				throw new R19Error("r19 does not support function return values.", {
+					procedurePath: clientArgs.procedurePath,
+					procedureArgs: clientArgs.procedureArgs,
+				});
 			}
 
 			return value;
@@ -112,15 +131,21 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 		if (isErrorLike(error)) {
 			const body = encode(
 				{
-					error: {
-						name: error.name,
-						message: error.message,
-						stack:
-							process.env.NODE_ENV === "development" ? error.stack : undefined,
-					},
+					error: isR19ErrorLike(error)
+						? error
+						: {
+								name: error.name,
+								message: error.message,
+								stack:
+									process.env.NODE_ENV === "development"
+										? error.stack
+										: undefined,
+						  },
 				},
 				{ ignoreUndefined: true },
 			);
+
+			args.onError?.({ error, ...clientArgs });
 
 			return {
 				body,
@@ -146,15 +171,20 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 		};
 	} catch (error) {
 		if (error instanceof Error) {
-			console.error(error);
-
-			const body = encode({
-				error: {
-					name: "RPCError",
-					message:
-						"Unable to serialize server response. Check the server log for details.",
+			const rpcError = new R19Error(
+				"Unable to serialize server response. Check the server log for details.",
+				{
+					procedurePath: clientArgs.procedurePath,
+					procedureArgs: clientArgs.procedureArgs,
+					cause: error,
 				},
-			});
+			);
+
+			console.error(rpcError);
+
+			const body = encode(rpcError);
+
+			args.onError?.({ error, ...clientArgs });
 
 			return {
 				body,
