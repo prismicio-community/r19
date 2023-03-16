@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.7](https://github.com/prismicio-community/r19/compare/v0.1.7-alpha.0...v0.1.7) (2023-03-16)
+
+
+### Features
+
+* export `R19Error` and `isR19ErrorLike` helper ([b70d57f](https://github.com/prismicio-community/r19/commit/b70d57f56624bd05c3f368ade31eb89365c1ca97))
+* wrap r19-specific errors with `R19Error` ([bb88cad](https://github.com/prismicio-community/r19/commit/bb88cad070cac3ec17b7bd76b82c5bc65fa67fbc))
+
+
+### Bug Fixes
+
+* don't wrap procedure-thrown errors ([bb5e242](https://github.com/prismicio-community/r19/commit/bb5e242bae26989632ab66dcbd34d5f5d0c984c1))
+* remove `isR19ErrorLike()` ([95cf7c9](https://github.com/prismicio-community/r19/commit/95cf7c99f4006b0313e63ca0b6a7c63802c22014))
+
+
+### Documentation
+
+* code style ([f1c5dfd](https://github.com/prismicio-community/r19/commit/f1c5dfdccac88386455e7dd2f778da458d952d59))
+
 ### [0.1.7-alpha.0](https://github.com/prismicio-community/r19/compare/v0.1.6...v0.1.7-alpha.0) (2023-03-15)
 
 
