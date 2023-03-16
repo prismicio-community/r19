@@ -1,9 +1,12 @@
 import { encode, decode } from "@msgpack/msgpack";
 
-import { replaceLeaves } from "../lib/replaceLeaves";
 import { isErrorLike } from "../lib/isErrorLike";
+import { isPlainObject } from "../lib/isPlainObject";
+import { isR19ErrorLike } from "../lib/isR19ErrorLike";
+import { replaceLeaves } from "../lib/replaceLeaves";
 
 import { Procedures, Procedure, ProcedureCallServerResponse } from "../types";
+import { R19Error } from "../R19Error";
 
 const createArbitrarilyNestedFunction = <T>(
 	handler: (path: string[], args: unknown[]) => unknown,
@@ -92,16 +95,31 @@ export const createRPCClient = <TProcedures extends Procedures>(
 	const resolvedFetch: FetchLike =
 		args.fetch || globalThis.fetch.bind(globalThis);
 
-	return createArbitrarilyNestedFunction(async (path, fnArgs) => {
+	return createArbitrarilyNestedFunction(async (procedurePath, fnArgs) => {
+		const procedureArgs = fnArgs[0] as Record<string, unknown>;
+
+		if (procedureArgs !== undefined && !isPlainObject(procedureArgs)) {
+			throw new R19Error(
+				"r19 only supports a single object procedure argument, but something else was provided.",
+				{
+					procedurePath,
+					procedureArgs,
+				},
+			);
+		}
+
 		const preparedProcedureArgs = await replaceLeaves(
-			fnArgs[0],
+			procedureArgs,
 			async (value) => {
 				if (value instanceof Blob) {
 					return new Uint8Array(await value.arrayBuffer());
 				}
 
 				if (typeof value === "function") {
-					throw new Error("r19 does not support function arguments.");
+					throw new R19Error("r19 does not support function arguments.", {
+						procedurePath,
+						procedureArgs,
+					});
 				}
 
 				return value;
@@ -110,7 +128,7 @@ export const createRPCClient = <TProcedures extends Procedures>(
 
 		const body = encode(
 			{
-				procedurePath: path,
+				procedurePath: procedurePath,
 				procedureArgs: preparedProcedureArgs,
 			},
 			{ ignoreUndefined: true },
@@ -132,16 +150,26 @@ export const createRPCClient = <TProcedures extends Procedures>(
 		if ("error" in resObject) {
 			const resError = resObject.error;
 
-			if (isErrorLike(resError)) {
+			if (isR19ErrorLike(resError)) {
+				const error = new R19Error(resError.message, {
+					procedurePath,
+					procedureArgs,
+				});
+				error.stack = resError.stack;
+
+				throw error;
+			} else if (isErrorLike(resError)) {
 				const error = new Error(resError.message);
 				error.name = resError.name;
 				error.stack = resError.stack;
 
 				throw error;
 			} else {
-				throw new Error(
+				throw new R19Error(
 					"An unexpected response was received from the RPC server.",
 					{
+						procedurePath,
+						procedureArgs,
 						cause: resObject,
 					},
 				);

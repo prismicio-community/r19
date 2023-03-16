@@ -12,6 +12,8 @@ export {
 
 export { handleRPCRequest } from "./handleRPCRequest";
 
+export { R19Error } from "./R19Error";
+
 export {
 	Procedure,
 	Procedures,
