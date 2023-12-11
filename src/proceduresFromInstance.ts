@@ -25,7 +25,7 @@ type AllObjDotPaths<TObj, TDotPath extends string = ""> = TObj extends
 						| AppendDotPathSegment<TDotPath, P>
 						| AllObjDotPaths<TObj[P], AppendDotPathSegment<TDotPath, P>>
 				: TDotPath;
-	  }[keyof TObj];
+		}[keyof TObj];
 
 type RecursiveOmitNested<
 	TObj,
@@ -43,9 +43,9 @@ type RecursiveOmitNested<
 						TObj[P],
 						TOmitPath,
 						AppendDotPathSegment<TDotPath, P>
-				  >
+					>
 				: TObj[P];
-	  };
+		};
 
 type OnlyProcedures<TProceduresInstance> =
 	TProceduresInstance extends AnyFunction
@@ -56,7 +56,7 @@ type OnlyProcedures<TProceduresInstance> =
 				> extends Exclude<Primitives, AnyFunction> | Record<PropertyKey, never>
 					? never
 					: P]: OnlyProcedures<TProceduresInstance[P]>;
-		  };
+			};
 
 type _ProceduresFromInstanceConfig = {
 	omit?: readonly string[];

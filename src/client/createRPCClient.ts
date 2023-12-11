@@ -34,9 +34,9 @@ type TransformProcedures<TProcedures> =
 	TProcedures extends Procedures
 		? { [P in keyof TProcedures]: TransformProcedures<TProcedures[P]> }
 		: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-		TProcedures extends Procedure<any>
-		? TransformProcedure<TProcedures>
-		: TProcedures;
+			TProcedures extends Procedure<any>
+			? TransformProcedure<TProcedures>
+			: TProcedures;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TransformProcedure<TProcedure extends Procedure<any>> = (
@@ -56,25 +56,25 @@ type TransformProcedureArg<TArg> = TArg extends
 	| unknown[]
 	? {
 			[P in keyof TArg]: TransformProcedureArg<TArg[P]>;
-	  }
+		}
 	: TArg extends Buffer
-	? Blob
-	: TArg;
+		? Blob
+		: TArg;
 
 type TransformProcedureReturnType<TReturnType> = TReturnType extends
 	| Record<string, unknown>
 	| unknown[]
 	? {
 			[P in keyof TReturnType]: TransformProcedureReturnType<TReturnType[P]>;
-	  }
+		}
 	: TReturnType extends Buffer
-	? Blob
-	: TReturnType extends Error
-	? {
-			name: string;
-			message: string;
-	  }
-	: TReturnType;
+		? Blob
+		: TReturnType extends Error
+			? {
+					name: string;
+					message: string;
+				}
+			: TReturnType;
 
 export type ResponseLike = {
 	arrayBuffer: () => Promise<ArrayBuffer>;
