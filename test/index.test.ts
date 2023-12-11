@@ -83,6 +83,24 @@ it("supports procedures without return values", async () => {
 	expect(res).toBe(undefined);
 });
 
+it("supports procedures with multiple arguments", async () => {
+	const procedures = {
+		ping: (a: string, b: boolean) => ({ a, b }),
+	};
+	const server = startRPCTestServer({ procedures });
+
+	const client = createRPCClient<typeof procedures>({
+		serverURL: server.url,
+		fetch,
+	});
+
+	const res = await client.ping("foo", true);
+
+	server.close();
+
+	expect(res).toStrictEqual({ a: "foo", b: true });
+});
+
 it("supports procedures using JavaScript data structures", async () => {
 	const procedures = {
 		dateDiff: (args: { a: Date; b: Date }) =>
