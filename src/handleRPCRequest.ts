@@ -106,7 +106,7 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 			},
 		);
 
-		res = await procedure(procedureArgs);
+		res = await procedure(...procedureArgs);
 
 		res = await replaceLeaves(res, async (value) => {
 			if (isErrorLike(value)) {
