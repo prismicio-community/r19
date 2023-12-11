@@ -27,13 +27,14 @@ export type Procedures = Record<
 	  >
 >;
 
-export type Procedure<TArgs extends Record<string, unknown>> = (
-	args: TArgs,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Procedure<TArgs extends any[]> = (
+	...args: TArgs
 ) => unknown | Promise<unknown>;
 
 export type ProcedureCallServerArgs = {
 	procedurePath: string[];
-	procedureArgs: Record<string, unknown>;
+	procedureArgs: unknown[];
 };
 
 export type ProcedureCallServerResponse =

@@ -18,10 +18,19 @@ const isPlainObject = <Value>(
 
 type Replacer = (value: unknown) => unknown | Promise<unknown>;
 
-export const replaceLeaves = async (
-	input: unknown,
+type ReplaceLeavesReturnValue<TInput> =
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	TInput extends any[]
+		? unknown[]
+		: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+		TInput extends Record<PropertyKey, any>
+		? { [P in keyof TInput]: unknown }
+		: unknown;
+
+export const replaceLeaves = async <TInput>(
+	input: TInput,
 	replacer: Replacer,
-): Promise<unknown> => {
+): Promise<ReplaceLeavesReturnValue<TInput>> => {
 	if (Array.isArray(input)) {
 		const preparedProcedureArgs: unknown[] = [];
 
@@ -29,7 +38,7 @@ export const replaceLeaves = async (
 			preparedProcedureArgs[i] = await replaceLeaves(input[i], replacer);
 		}
 
-		return preparedProcedureArgs;
+		return preparedProcedureArgs as ReplaceLeavesReturnValue<TInput>;
 	}
 
 	if (isPlainObject(input)) {
@@ -42,8 +51,8 @@ export const replaceLeaves = async (
 			);
 		}
 
-		return preparedProcedureArgs;
+		return preparedProcedureArgs as ReplaceLeavesReturnValue<TInput>;
 	}
 
-	return await replacer(input);
+	return (await replacer(input)) as ReplaceLeavesReturnValue<TInput>;
 };

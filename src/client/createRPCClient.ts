@@ -1,7 +1,6 @@
 import { encode, decode } from "@msgpack/msgpack";
 
 import { isErrorLike } from "../lib/isErrorLike";
-import { isPlainObject } from "../lib/isPlainObject";
 import { isR19ErrorLike } from "../lib/isR19ErrorLike";
 import { replaceLeaves } from "../lib/replaceLeaves";
 
@@ -41,20 +40,26 @@ type TransformProcedures<TProcedures> =
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TransformProcedure<TProcedure extends Procedure<any>> = (
-	...args: Parameters<TProcedure> extends []
-		? []
-		: [TransformProcedureArgs<Parameters<TProcedure>[0]>]
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	...args: TransformProcedureArgs<Parameters<TProcedure>> extends any[]
+		? TransformProcedureArgs<Parameters<TProcedure>>
+		: []
 ) => Promise<TransformProcedureReturnType<Awaited<ReturnType<TProcedure>>>>;
 
-type TransformProcedureArgs<TArgs> = TArgs extends
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TransformProcedureArgs<TArgs extends any[]> = {
+	[P in keyof TArgs]: TransformProcedureArg<TArgs[P]>;
+};
+
+type TransformProcedureArg<TArg> = TArg extends
 	| Record<string, unknown>
 	| unknown[]
 	? {
-			[P in keyof TArgs]: TransformProcedureArgs<TArgs[P]>;
+			[P in keyof TArg]: TransformProcedureArg<TArg[P]>;
 	  }
-	: TArgs extends Buffer
+	: TArg extends Buffer
 	? Blob
-	: TArgs;
+	: TArg;
 
 type TransformProcedureReturnType<TReturnType> = TReturnType extends
 	| Record<string, unknown>
@@ -95,93 +100,83 @@ export const createRPCClient = <TProcedures extends Procedures>(
 	const resolvedFetch: FetchLike =
 		args.fetch || globalThis.fetch.bind(globalThis);
 
-	return createArbitrarilyNestedFunction(async (procedurePath, fnArgs) => {
-		const procedureArgs = fnArgs[0] as Record<string, unknown>;
+	return createArbitrarilyNestedFunction(
+		async (procedurePath, procedureArgs) => {
+			const preparedProcedureArgs = await replaceLeaves(
+				procedureArgs,
+				async (value) => {
+					if (value instanceof Blob) {
+						return new Uint8Array(await value.arrayBuffer());
+					}
 
-		if (procedureArgs !== undefined && !isPlainObject(procedureArgs)) {
-			throw new R19Error(
-				"r19 only supports a single object procedure argument, but something else was provided.",
-				{
-					procedurePath,
-					procedureArgs,
+					if (typeof value === "function") {
+						throw new R19Error("r19 does not support function arguments.", {
+							procedurePath,
+							procedureArgs,
+						});
+					}
+
+					return value;
 				},
 			);
-		}
 
-		const preparedProcedureArgs = await replaceLeaves(
-			procedureArgs,
-			async (value) => {
-				if (value instanceof Blob) {
-					return new Uint8Array(await value.arrayBuffer());
-				}
+			const body = encode(
+				{
+					procedurePath: procedurePath,
+					procedureArgs: preparedProcedureArgs,
+				},
+				{ ignoreUndefined: true },
+			);
 
-				if (typeof value === "function") {
-					throw new R19Error("r19 does not support function arguments.", {
+			const res = await resolvedFetch(args.serverURL, {
+				method: "POST",
+				body,
+				headers: {
+					"Content-Type": "application/msgpack",
+				},
+			});
+
+			const arrayBuffer = await res.arrayBuffer();
+			const resObject = decode(
+				new Uint8Array(arrayBuffer),
+			) as ProcedureCallServerResponse;
+
+			if ("error" in resObject) {
+				const resError = resObject.error;
+
+				if (isR19ErrorLike(resError)) {
+					const error = new R19Error(resError.message, {
 						procedurePath,
 						procedureArgs,
 					});
+					error.stack = resError.stack;
+
+					throw error;
+				} else if (isErrorLike(resError)) {
+					const error = new Error(resError.message);
+					error.name = resError.name;
+					error.stack = resError.stack;
+
+					throw error;
+				} else {
+					throw new R19Error(
+						"An unexpected response was received from the RPC server.",
+						{
+							procedurePath,
+							procedureArgs,
+							cause: resObject,
+						},
+					);
 				}
-
-				return value;
-			},
-		);
-
-		const body = encode(
-			{
-				procedurePath: procedurePath,
-				procedureArgs: preparedProcedureArgs,
-			},
-			{ ignoreUndefined: true },
-		);
-
-		const res = await resolvedFetch(args.serverURL, {
-			method: "POST",
-			body,
-			headers: {
-				"Content-Type": "application/msgpack",
-			},
-		});
-
-		const arrayBuffer = await res.arrayBuffer();
-		const resObject = decode(
-			new Uint8Array(arrayBuffer),
-		) as ProcedureCallServerResponse;
-
-		if ("error" in resObject) {
-			const resError = resObject.error;
-
-			if (isR19ErrorLike(resError)) {
-				const error = new R19Error(resError.message, {
-					procedurePath,
-					procedureArgs,
-				});
-				error.stack = resError.stack;
-
-				throw error;
-			} else if (isErrorLike(resError)) {
-				const error = new Error(resError.message);
-				error.name = resError.name;
-				error.stack = resError.stack;
-
-				throw error;
 			} else {
-				throw new R19Error(
-					"An unexpected response was received from the RPC server.",
-					{
-						procedurePath,
-						procedureArgs,
-						cause: resObject,
-					},
-				);
-			}
-		} else {
-			return replaceLeaves(resObject.data, async (value) => {
-				if (value instanceof Uint8Array) {
-					return new Blob([value]);
-				}
+				return replaceLeaves(resObject.data, async (value) => {
+					if (value instanceof Uint8Array) {
+						return new Blob([value]);
+					}
 
-				return value;
-			});
-		}
-	});
+					return value;
+				});
+			}
+		},
+	);
 };

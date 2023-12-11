@@ -106,7 +106,7 @@ export type OmittableProcedures<TProceduresInstance> = AllObjDotPaths<
 
 export type ProceduresFromInstance<
 	TProceduresInstance,
-	TOmitPaths extends string,
+	TOmitPaths extends string = never,
 > = RecursiveOmitNested<OnlyProcedures<TProceduresInstance>, TOmitPaths>;
 
 type ProceduresFromInstanceConfig<

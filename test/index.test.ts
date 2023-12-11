@@ -83,6 +83,24 @@ it("supports procedures without return values", async () => {
 	expect(res).toBe(undefined);
 });
 
+it("supports procedures with multiple arguments", async () => {
+	const procedures = {
+		ping: (a: string, b: boolean) => ({ a, b }),
+	};
+	const server = startRPCTestServer({ procedures });
+
+	const client = createRPCClient<typeof procedures>({
+		serverURL: server.url,
+		fetch,
+	});
+
+	const res = await client.ping("foo", true);
+
+	server.close();
+
+	expect(res).toStrictEqual({ a: "foo", b: true });
+});
+
 it("supports procedures using JavaScript data structures", async () => {
 	const procedures = {
 		dateDiff: (args: { a: Date; b: Date }) =>
@@ -202,7 +220,7 @@ it("does not support function arguments", async () => {
 			name: "R19Error",
 			message: expect.stringMatching(/does not support function arguments/i),
 			procedurePath: ["ping"],
-			procedureArgs: { fn: fnArg },
+			procedureArgs: [{ fn: fnArg }],
 		}),
 	);
 
@@ -225,7 +243,7 @@ it("does not support function return values", async () => {
 		name: "R19Error",
 		message: expect.stringMatching(/does not support function return values/i),
 		procedurePath: ["ping"],
-		procedureArgs: undefined,
+		procedureArgs: [],
 	});
 
 	await expect(async () => {
@@ -237,7 +255,7 @@ it("does not support function return values", async () => {
 	expect(onError).toHaveBeenCalledWith({
 		error: expectedError,
 		procedurePath: ["ping"],
-		procedureArgs: undefined,
+		procedureArgs: [],
 	});
 });
 
@@ -272,7 +290,7 @@ it("does not support class arguments", async () => {
 	expect(onError).toHaveBeenCalledWith({
 		error: expectedError,
 		procedurePath: ["ping"],
-		procedureArgs: { foo: fooArg },
+		procedureArgs: [{ foo: fooArg }],
 	});
 });
 
@@ -324,9 +342,7 @@ it("supports `onError` event handler", async () => {
 			name: "Error",
 			message: "foo",
 		}),
-		procedureArgs: {
-			input: "foo",
-		},
+		procedureArgs: [{ input: "foo" }],
 		procedurePath: ["throw"],
 	});
 });
@@ -363,7 +379,7 @@ it("throws if a non-existent procedure is called", async () => {
 		name: "R19Error",
 		message: expect.stringMatching(/invalid procedure name: pong/i),
 		procedurePath: ["pong"],
-		procedureArgs: { input: "foo" },
+		procedureArgs: [{ input: "foo" }],
 	});
 
 	await expect(async () => {
@@ -376,6 +392,6 @@ it("throws if a non-existent procedure is called", async () => {
 	expect(onError).toHaveBeenCalledWith({
 		error: expectedError,
 		procedurePath: ["pong"],
-		procedureArgs: { input: "foo" },
+		procedureArgs: [{ input: "foo" }],
 	});
 });

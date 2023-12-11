@@ -1,12 +1,12 @@
 type R19ErrorOptions = {
 	procedurePath?: string[];
-	procedureArgs?: Record<string, unknown>;
+	procedureArgs?: unknown[];
 	cause?: unknown;
 };
 
 export class R19Error extends Error {
 	procedurePath?: string[];
-	procedureArgs?: Record<string, unknown>;
+	procedureArgs?: unknown[];
 
 	constructor(message: string, options: R19ErrorOptions = {}) {
 		super();
