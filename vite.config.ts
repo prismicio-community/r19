@@ -10,6 +10,7 @@ export default defineConfig({
 	},
 	test: {
 		coverage: {
+			provider: "v8",
 			reporter: ["lcovonly", "text"],
 		},
 		setupFiles: ["./test/__setup__.ts"],
