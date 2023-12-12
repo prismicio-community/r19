@@ -85,10 +85,10 @@ type TransformProcedureArgs<TArgs> = TArgs extends
 	| unknown[]
 	? {
 			[P in keyof TArgs]: TransformProcedureArgs<TArgs[P]>;
-	  }
+		}
 	: TArgs extends Buffer
-	? Blob
-	: TArgs;
+		? Blob
+		: TArgs;
 ```
 
 This type accepts arguments via the `TArgs` type parameter and transforms them based on their type:

@@ -23,9 +23,9 @@ type ReplaceLeavesReturnValue<TInput> =
 	TInput extends any[]
 		? unknown[]
 		: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-		TInput extends Record<PropertyKey, any>
-		? { [P in keyof TInput]: unknown }
-		: unknown;
+			TInput extends Record<PropertyKey, any>
+			? { [P in keyof TInput]: unknown }
+			: unknown;
 
 export const replaceLeaves = async <TInput>(
 	input: TInput,

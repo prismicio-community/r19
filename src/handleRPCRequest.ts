@@ -140,7 +140,7 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 									process.env.NODE_ENV === "development"
 										? error.stack
 										: undefined,
-						  },
+							},
 				},
 				{ ignoreUndefined: true },
 			);
