@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/prismicio-community/r19/compare/v0.1.7...v0.1.8) (2023-12-12)
+
+
+### Features
+
+* support multple procedure arguments ([#10](https://github.com/prismicio-community/r19/issues/10)) ([edce887](https://github.com/prismicio-community/r19/commit/edce88734ffa6833c4d825a298383361f1efaf75))
+
+
+### Chore
+
+* **deps:** update dependencies ([#11](https://github.com/prismicio-community/r19/issues/11)) ([af13743](https://github.com/prismicio-community/r19/commit/af13743061bd5894e9fffefaaea6fbd80d152548))
+
 ### [0.1.7](https://github.com/prismicio-community/r19/compare/v0.1.7-alpha.0...v0.1.7) (2023-03-16)
 
 

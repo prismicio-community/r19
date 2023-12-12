@@ -1,6 +1,6 @@
 {
 	"name": "r19",
-	"version": "0.1.7",
+	"version": "0.1.8",
 	"description": "Simple remote procedure calls in TypeScript",
 	"keywords": [
 		"typescript",
