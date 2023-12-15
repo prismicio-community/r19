@@ -106,7 +106,11 @@ export const handleRPCRequest = async <TProcedures extends Procedures>(
 			},
 		);
 
-		res = await procedure(...procedureArgs);
+		// `?? []` handles an edge case where `procedureArgs` is
+		// undefined. It likely happens when the client and server has
+		// mismatching r19 versions installed (v0.1.8 introduced
+		// multiple arguments, requiring arguments to be spread).
+		res = await procedure(...(procedureArgs ?? []));
 
 		res = await replaceLeaves(res, async (value) => {
 			if (isErrorLike(value)) {
