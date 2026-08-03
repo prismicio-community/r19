@@ -1,22 +1,11 @@
-export {
-	CreateRPCMiddlewareArgs,
-	RPCMiddleware,
-	createRPCMiddleware,
-} from "./createRPCMiddleware";
+export { createRPCMiddleware } from "./createRPCMiddleware"
+export type { CreateRPCMiddlewareArgs, RPCMiddleware } from "./createRPCMiddleware"
 
-export {
-	ProceduresFromInstance,
-	proceduresFromInstance,
-	OmittableProcedures,
-} from "./proceduresFromInstance";
+export { proceduresFromInstance } from "./proceduresFromInstance"
+export type { ProceduresFromInstance, OmittableProcedures } from "./proceduresFromInstance"
 
-export { handleRPCRequest } from "./handleRPCRequest";
+export { handleRPCRequest } from "./handleRPCRequest"
 
-export { R19Error } from "./R19Error";
+export { R19Error } from "./R19Error"
 
-export {
-	Procedure,
-	Procedures,
-	ExtractProcedures,
-	OnErrorEventHandler,
-} from "./types";
+export type { Procedure, Procedures, ExtractProcedures, OnErrorEventHandler } from "./types"

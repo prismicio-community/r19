@@ -55,16 +55,16 @@ Middleware produced by `createRPCMiddleware()` holds a type reference to its pro
 
 ```typescript
 function createRPCMiddleware<TProcedures extends Procedures>(
-	args: CreateRPCMiddlewareArgs<TProcedures>,
-): RPCMiddleware<TProcedures>;
+  args: CreateRPCMiddlewareArgs<TProcedures>,
+): RPCMiddleware<TProcedures>
 ```
 
 The type reference can be reused in its client.
 
 ```typescript
 function createRPCClient<TProcedures extends Procedures>(
-	args: CreateRPCClientArgs,
-): RPCClient<TProcedures>;
+  args: CreateRPCClientArgs,
+): RPCClient<TProcedures>
 ```
 
 With that reference, every procedure is properly typed without additional runtime validation. If a type error occurs, client builds should fail.
@@ -80,15 +80,13 @@ Procedure types need to be modified slightly to support binary data. `Buffer`s a
 For example, the following type is used to transform procedure arguments:
 
 ```typescript
-type TransformProcedureArgs<TArgs> = TArgs extends
-	| Record<string, unknown>
-	| unknown[]
-	? {
-			[P in keyof TArgs]: TransformProcedureArgs<TArgs[P]>;
-		}
-	: TArgs extends Buffer
-		? Blob
-		: TArgs;
+type TransformProcedureArgs<TArgs> = TArgs extends Record<string, unknown> | unknown[]
+  ? {
+      [P in keyof TArgs]: TransformProcedureArgs<TArgs[P]>
+    }
+  : TArgs extends Buffer
+    ? Blob
+    : TArgs
 ```
 
 This type accepts arguments via the `TArgs` type parameter and transforms them based on their type:

@@ -1,60 +1,60 @@
-import { Buffer } from "node:buffer";
-import { IncomingMessage, ServerResponse } from "node:http";
+import { Buffer } from "node:buffer"
+import type { IncomingMessage, ServerResponse } from "node:http"
 
-import { OnErrorEventHandler, Procedures } from "./types";
-import { handleRPCRequest } from "./handleRPCRequest";
+import { handleRPCRequest } from "./handleRPCRequest"
+import type { OnErrorEventHandler, Procedures } from "./types"
 
 export type RPCMiddleware<TProcedures extends Procedures> = {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	(req: IncomingMessage, res: ServerResponse, next: (err?: Error) => any): void;
-	_procedures: TProcedures;
-};
+  // oxlint-disable-next-line typescript/no-explicit-any
+  (req: IncomingMessage, res: ServerResponse, next: (err?: Error) => any): void
+  _procedures: TProcedures
+}
 
 export type CreateRPCMiddlewareArgs<TProcedures extends Procedures> = {
-	procedures: TProcedures;
-	onError?: OnErrorEventHandler;
-};
+  procedures: TProcedures
+  onError?: OnErrorEventHandler
+}
 
 export const createRPCMiddleware = <TProcedures extends Procedures>(
-	args: CreateRPCMiddlewareArgs<TProcedures>,
+  args: CreateRPCMiddlewareArgs<TProcedures>,
 ): RPCMiddleware<TProcedures> => {
-	const fn: RPCMiddleware<TProcedures> = (req, res, next) => {
-		if (req.method !== "POST") {
-			res.statusCode = 405;
+  const fn: RPCMiddleware<TProcedures> = (req, res, next) => {
+    if (req.method !== "POST") {
+      res.statusCode = 405
 
-			res.end();
+      res.end()
 
-			return next();
-		}
+      return next()
+    }
 
-		const requestBodyChunks: Buffer[] = [];
+    const requestBodyChunks: Buffer[] = []
 
-		req.on("data", (chunk) => {
-			requestBodyChunks.push(chunk);
-		});
+    req.on("data", (chunk) => {
+      requestBodyChunks.push(chunk)
+    })
 
-		req.on("end", async () => {
-			const { body, headers, statusCode } = await handleRPCRequest({
-				procedures: args.procedures,
-				body: Buffer.concat(requestBodyChunks),
-				onError: args.onError,
-			});
+    req.on("end", async () => {
+      const { body, headers, statusCode } = await handleRPCRequest({
+        procedures: args.procedures,
+        body: Buffer.concat(requestBodyChunks),
+        onError: args.onError,
+      })
 
-			if (statusCode) {
-				res.statusCode = statusCode;
-			}
+      if (statusCode) {
+        res.statusCode = statusCode
+      }
 
-			for (const headerName in headers) {
-				res.setHeader(headerName, headers[headerName]);
-			}
+      for (const headerName in headers) {
+        res.setHeader(headerName, headers[headerName])
+      }
 
-			res.end(Buffer.from(body), "binary");
+      res.end(Buffer.from(body), "binary")
 
-			next();
-		});
-	};
+      next()
+    })
+  }
 
-	fn._procedures = args.procedures;
+  fn._procedures = args.procedures
 
-	return fn;
-};
+  return fn
+}

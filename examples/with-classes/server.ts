@@ -1,9 +1,10 @@
-import express from "express";
-import { middleware } from "./rpc-middleware";
+import express from "express"
 
-const app = express();
+import { middleware } from "./rpc-middleware"
+
+const app = express()
 
 // Provide the RPC middleware created using `createRPCMiddleware()`.
-app.use("/rpc", middleware);
+app.use("/rpc", middleware)
 
-app.listen(3000);
+app.listen(3000)
