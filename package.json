@@ -22,14 +22,24 @@
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.cts",
+	"typesVersions": {
+		"*": {
+			"*": [
+				"dist/index.d.ts"
+			],
+			"client": [
+				"dist/client.d.ts"
+			]
+		}
+	},
 	"exports": {
 		".": {
 			"import": "./dist/index.js",
 			"require": "./dist/index.cjs"
 		},
 		"./client": {
-			"import": "./dist/client/index.js",
-			"require": "./dist/client/index.cjs"
+			"import": "./dist/client.js",
+			"require": "./dist/client.cjs"
 		},
 		"./package.json": "./package.json"
 	},

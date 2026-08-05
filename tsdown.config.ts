@@ -1,7 +1,10 @@
 import { defineConfig } from "tsdown"
 
 export default defineConfig({
-	entry: ["./src/index.ts", "./src/client/index.ts"],
+	entry: {
+		index: "./src/index.ts",
+		client: "./src/client/index.ts",
+	},
 	format: ["esm", "cjs"],
 	platform: "neutral",
 	unbundle: true,
