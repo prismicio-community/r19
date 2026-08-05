@@ -71,7 +71,7 @@ npm install r19
     import type { Procedures } from "./rpc-middleware"
 
     const client = createRPCClient<Procedures>({
-      serverURL: "https://example.com/rpc",
+    	serverURL: "https://example.com/rpc",
     })
 
     const pong = await client.ping() // => "pong"

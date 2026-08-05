@@ -13,11 +13,11 @@ import * as fs from "node:fs/promises"
 import { createRPCMiddleware } from "r19"
 
 export const middleware = createRPCMiddleware({
-  procedures: {
-    write({ path, contents }: { path: string; contents: Buffer }) {
-      await fs.writeFile(path, contents)
-    },
-  },
+	procedures: {
+		write({ path, contents }: { path: string; contents: Buffer }) {
+			await fs.writeFile(path, contents)
+		},
+	},
 })
 
 export type Procedures = ExtractProcedures<typeof middleware>
@@ -30,12 +30,12 @@ import { createRPCClient } from "r19/client"
 import type { Procedures } from "./path/to/your/middleware"
 
 const client = createRPCClient<Procedures>({
-  serverURL: "https://example.com/rpc",
+	serverURL: "https://example.com/rpc",
 })
 
 await client.write({
-  path: "index.html",
-  contents: new Blob(["<html>...</html>"]),
+	path: "index.html",
+	contents: new Blob(["<html>...</html>"]),
 })
 ```
 
@@ -47,14 +47,14 @@ Most JavaScript data can be used, but functions and classs cannot be serialized.
 
 ```typescript
 export const middleware = createRPCMiddleware({
-  procedures: {
-    // INVALID: `callback` is not allowed!
-    async ping({ callback }: { callback: () => void }) {
-      await callback()
+	procedures: {
+		// INVALID: `callback` is not allowed!
+		async ping({ callback }: { callback: () => void }) {
+			await callback()
 
-      return "pong"
-    },
-  },
+			return "pong"
+		},
+	},
 })
 ```
 
@@ -64,17 +64,17 @@ Procedures cannot accept more than one argument, but they can accept a single ob
 
 ```typescript
 export const middleware = createRPCMiddleware({
-  procedures: {
-    // Allowed
-    add({ a, b }: { a: number; b: number }) {
-      return a + b
-    },
+	procedures: {
+		// Allowed
+		add({ a, b }: { a: number; b: number }) {
+			return a + b
+		},
 
-    // Not allowed
-    subtract(a: number, b: number) {
-      return a - b
-    },
-  },
+		// Not allowed
+		subtract(a: number, b: number) {
+			return a - b
+		},
+	},
 })
 ```
 

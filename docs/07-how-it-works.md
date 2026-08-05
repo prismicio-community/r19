@@ -55,7 +55,7 @@ Middleware produced by `createRPCMiddleware()` holds a type reference to its pro
 
 ```typescript
 function createRPCMiddleware<TProcedures extends Procedures>(
-  args: CreateRPCMiddlewareArgs<TProcedures>,
+	args: CreateRPCMiddlewareArgs<TProcedures>,
 ): RPCMiddleware<TProcedures>
 ```
 
@@ -63,7 +63,7 @@ The type reference can be reused in its client.
 
 ```typescript
 function createRPCClient<TProcedures extends Procedures>(
-  args: CreateRPCClientArgs,
+	args: CreateRPCClientArgs,
 ): RPCClient<TProcedures>
 ```
 
@@ -81,12 +81,12 @@ For example, the following type is used to transform procedure arguments:
 
 ```typescript
 type TransformProcedureArgs<TArgs> = TArgs extends Record<string, unknown> | unknown[]
-  ? {
-      [P in keyof TArgs]: TransformProcedureArgs<TArgs[P]>
-    }
-  : TArgs extends Buffer
-    ? Blob
-    : TArgs
+	? {
+			[P in keyof TArgs]: TransformProcedureArgs<TArgs[P]>
+		}
+	: TArgs extends Buffer
+		? Blob
+		: TArgs
 ```
 
 This type accepts arguments via the `TArgs` type parameter and transforms them based on their type:

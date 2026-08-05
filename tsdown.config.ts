@@ -1,10 +1,10 @@
 import { defineConfig } from "tsdown"
 
 export default defineConfig({
-  entry: ["./src/index.ts", "./src/client/index.ts"],
-  format: ["esm", "cjs"],
-  platform: "neutral",
-  unbundle: true,
-  sourcemap: true,
-  exports: true,
+	entry: ["./src/index.ts", "./src/client/index.ts"],
+	format: ["esm", "cjs"],
+	platform: "neutral",
+	unbundle: true,
+	sourcemap: true,
+	exports: true,
 })

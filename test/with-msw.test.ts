@@ -11,28 +11,28 @@ afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 it("works with MSW", async () => {
-  const procedures = {
-    ping: (args: { input: string }) => ({ pong: args.input }),
-  }
+	const procedures = {
+		ping: (args: { input: string }) => ({ pong: args.input }),
+	}
 
-  const serverURL = "http://localhost:1234"
-  const client = createRPCClient<typeof procedures>({ serverURL })
+	const serverURL = "http://localhost:1234"
+	const client = createRPCClient<typeof procedures>({ serverURL })
 
-  server.use(
-    http.post(serverURL, async ({ request }) => {
-      const rpcResponse = await handleRPCRequest({
-        body: await request.arrayBuffer(),
-        procedures,
-      })
+	server.use(
+		http.post(serverURL, async ({ request }) => {
+			const rpcResponse = await handleRPCRequest({
+				body: await request.arrayBuffer(),
+				procedures,
+			})
 
-      return new HttpResponse(rpcResponse.body, {
-        headers: rpcResponse.headers,
-        status: rpcResponse.statusCode || 200,
-      })
-    }),
-  )
+			return new HttpResponse(rpcResponse.body, {
+				headers: rpcResponse.headers,
+				status: rpcResponse.statusCode || 200,
+			})
+		}),
+	)
 
-  const res = await client.ping({ input: "foo" })
+	const res = await client.ping({ input: "foo" })
 
-  expect(res).toStrictEqual({ pong: "foo" })
+	expect(res).toStrictEqual({ pong: "foo" })
 })

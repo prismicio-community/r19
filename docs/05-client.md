@@ -9,7 +9,7 @@ import { createRPCClient } from "r19/client"
 import type { Procedures } from "./path/to/your/middleware"
 
 const client = createRPCClient<Procedures>({
-  serverURL: "https://example.com/rpc",
+	serverURL: "https://example.com/rpc",
 })
 
 const pong = await client.ping()

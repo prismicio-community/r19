@@ -8,11 +8,11 @@ Procedures are functions run on a server. You write them like normal functions w
 import { createRPCMiddleware, ExtractProcedures } from "r19"
 
 export const middleware = createRPCMiddleware({
-  procedures: {
-    add({ a, b }: { a: number; b: number }) {
-      return a + b
-    },
-  },
+	procedures: {
+		add({ a, b }: { a: number; b: number }) {
+			return a + b
+		},
+	},
 })
 
 export type Procedures = ExtractProcedures<typeof middleware>
@@ -27,7 +27,7 @@ import { createRPCClient } from "r19/client"
 import type { Procedures } from "./server"
 
 const client = createRPCClient<Procedures>({
-  serverURL: "https://example.com/rpc",
+	serverURL: "https://example.com/rpc",
 })
 
 const seven = await client.add({ a: 3, b: 4 })
@@ -41,14 +41,14 @@ Procedures can optionally accept named arguments using an object parameter.
 // src/rpc-middleware.ts
 
 export const middleware = createRPCMiddleware({
-  procedures: {
-    ping() {
-      return "pong"
-    },
-    add({ a, b }: { a: number; b: number }) {
-      return a + b
-    },
-  },
+	procedures: {
+		ping() {
+			return "pong"
+		},
+		add({ a, b }: { a: number; b: number }) {
+			return a + b
+		},
+	},
 })
 ```
 
@@ -60,17 +60,17 @@ Procedures can be synchronous or asynchronous. All client calls will be asynchro
 // src/rpc-middleware.ts
 
 export const middleware = createRPCMiddleware({
-  procedures: {
-    getCatFact(): string {
-      return "Cats are specifically not powered by flat-six, naturally aspirated, high-revving engines."
-    },
-    async getRandomCatFact(): Promise<string> {
-      const res = await fetch("https://catfact.ninja/fact")
-      const json = await res.json()
+	procedures: {
+		getCatFact(): string {
+			return "Cats are specifically not powered by flat-six, naturally aspirated, high-revving engines."
+		},
+		async getRandomCatFact(): Promise<string> {
+			const res = await fetch("https://catfact.ninja/fact")
+			const json = await res.json()
 
-      return json.fact
-    },
-  },
+			return json.fact
+		},
+	},
 })
 ```
 
@@ -81,7 +81,7 @@ import { createRPCClient } from "r19/client"
 import type { Procedures } from "./rpc-middleware"
 
 const client = createRPCClient<Procedures>({
-  serverURL: "https://example.com/rpc",
+	serverURL: "https://example.com/rpc",
 })
 
 // Both calls are asynchronous.
@@ -97,14 +97,14 @@ Procedures can optionally return values to clients.
 // src/rpc-middleware.ts
 
 export const middleware = createRPCMiddleware({
-  procedures: {
-    noop(): void {
-      // Do nothing
-    },
-    add({ a, b }: { a: number; b: number }) {
-      return a + b
-    },
-  },
+	procedures: {
+		noop(): void {
+			// Do nothing
+		},
+		add({ a, b }: { a: number; b: number }) {
+			return a + b
+		},
+	},
 })
 ```
 
@@ -116,18 +116,18 @@ Procedures can be nested arbitrarily.
 // src/rpc-middleware.ts
 
 export const middleware = createRPCMiddleware({
-  procedures: {
-    math: {
-      basic: {
-        add({ a, b }: { a: number; b: number }) {
-          return a + b
-        },
-        subtract({ a, b }: { a: number; b: number }) {
-          return a - b
-        },
-      },
-    },
-  },
+	procedures: {
+		math: {
+			basic: {
+				add({ a, b }: { a: number; b: number }) {
+					return a + b
+				},
+				subtract({ a, b }: { a: number; b: number }) {
+					return a - b
+				},
+			},
+		},
+	},
 })
 ```
 
@@ -138,7 +138,7 @@ import { createRPCClient } from "r19/client"
 import type { Procedures } from "./rpc-middleware"
 
 const client = createRPCClient<Procedures>({
-  serverURL: "https://example.com/rpc",
+	serverURL: "https://example.com/rpc",
 })
 
 const seven = await client.math.basic.add({ a: 3, b: 4 })
@@ -154,17 +154,17 @@ Procedures can be provided as class instances using the `proceduresFromInstance(
 import { createRPCMiddleware, proceduresFromInstance } from "r19"
 
 class Math {
-  add({ a, b }: { a: number; b: number }) {
-    return a + b
-  }
+	add({ a, b }: { a: number; b: number }) {
+		return a + b
+	}
 
-  subtract({ a, b }: { a: number; b: number }) {
-    return this.add({ a, b: -b })
-  }
+	subtract({ a, b }: { a: number; b: number }) {
+		return this.add({ a, b: -b })
+	}
 }
 
 export const middleware = createRPCMiddleware({
-  procedures: proceduresFromInstance(new Math()),
+	procedures: proceduresFromInstance(new Math()),
 })
 ```
 
@@ -176,19 +176,19 @@ export const middleware = createRPCMiddleware({
 import { createRPCMiddleware, proceduresFromInstance } from "r19"
 
 class Math {
-  add({ a, b }: { a: number; b: number }) {
-    return a + b
-  }
+	add({ a, b }: { a: number; b: number }) {
+		return a + b
+	}
 
-  subtract({ a, b }: { a: number; b: number }) {
-    return this.add({ a, b: -b })
-  }
+	subtract({ a, b }: { a: number; b: number }) {
+		return this.add({ a, b: -b })
+	}
 }
 
 export const middleware = createRPCMiddleware({
-  procedures: proceduresFromInstance(new Math(), {
-    // Removes the "subtract" procedure.
-    omit: ["subtract"],
-  }),
+	procedures: proceduresFromInstance(new Math(), {
+		// Removes the "subtract" procedure.
+		omit: ["subtract"],
+	}),
 })
 ```
