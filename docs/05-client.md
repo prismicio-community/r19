@@ -5,14 +5,14 @@ Calling procedures requires a client library. The client serializes arguments, r
 ```typescript
 // src/client.ts
 
-import { createRPCClient } from "r19/client";
-import type { Procedures } from "./path/to/your/middleware";
+import { createRPCClient } from "r19/client"
+import type { Procedures } from "./path/to/your/middleware"
 
 const client = createRPCClient<Procedures>({
 	serverURL: "https://example.com/rpc",
-});
+})
 
-const pong = await client.ping();
+const pong = await client.ping()
 ```
 
 In the above example, `client.ping()` sends a request to the RPC server at `https://example.com/rpc` and returns the procedure's return value.

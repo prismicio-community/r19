@@ -34,15 +34,15 @@ The middleware should be added to an HTTP server and served locally (e.g. `http:
 ```typescript
 // src/server.ts
 
-import express from "express";
-import { middleware } from "./rpc-middleware";
+import express from "express"
+import { middleware } from "./rpc-middleware"
 
-const app = express();
+const app = express()
 
 // Provide the RPC middleware created using `createRPCMiddleware()`.
-app.use("/rpc", middleware);
+app.use("/rpc", middleware)
 
-app.listen();
+app.listen()
 ```
 
 [express]: https://expressjs.com/

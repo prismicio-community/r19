@@ -1,20 +1,16 @@
-import {
-	createRPCMiddleware,
-	proceduresFromInstance,
-	ExtractProcedures,
-} from "r19";
+import { createRPCMiddleware, proceduresFromInstance, type ExtractProcedures } from "r19"
 
 class MyProcedures {
-	count = 0;
+	count = 0
 
 	increment() {
-		return ++this.count;
+		return ++this.count
 	}
 }
 
 export const middleware = createRPCMiddleware({
 	procedures: proceduresFromInstance(new MyProcedures()),
-});
+})
 
 // This type will be passed to the RPC client.
-export type Procedures = ExtractProcedures<typeof middleware>;
+export type Procedures = ExtractProcedures<typeof middleware>

@@ -49,15 +49,15 @@ npm install r19
     ```typescript
     // src/server.ts
 
-    import express from "express";
-    import { middleware } from "./rpc-middleware";
+    import express from "express"
+    import { middleware } from "./rpc-middleware"
 
-    const app = express();
+    const app = express()
 
     // Pass `middleware` from the previous step.
-    app.use("/rpc", middleware);
+    app.use("/rpc", middleware)
 
-    app.listen();
+    app.listen()
     ```
 
     The server is now set up to accept RPC calls at `/rpc` using a client.
@@ -67,14 +67,14 @@ npm install r19
     ```typescript
     // src/index.ts
 
-    import { createRPCClient } from "r19/client";
-    import type { Procedures } from "./rpc-middleware";
+    import { createRPCClient } from "r19/client"
+    import type { Procedures } from "./rpc-middleware"
 
     const client = createRPCClient<Procedures>({
     	serverURL: "https://example.com/rpc",
-    });
+    })
 
-    const pong = await client.ping(); // => "pong"
+    const pong = await client.ping() // => "pong"
     ```
 
     Calling `client.ping()` will send a request to the server at `https://example.com/rpc` and return `ping()`'s return value from the server. The client is fully typed using your procedure's types.

@@ -1,6 +1,6 @@
 {
 	"dependencies": {
-		"r19": "../..",
-		"express": "^5.0.0-beta.1"
+		"express": "^5.0.0-beta.1",
+		"r19": "../.."
 	}
 }
